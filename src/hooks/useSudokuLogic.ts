@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 
 import { GameContext } from '../context/GameContext';
@@ -13,23 +13,34 @@ export default function useSudokuLogic() {
         throw new Error('useSudokuLogic must be used within a GameContextProvider');
     }
 
-    const { board, setBoard, fixedCells, setFixedCells, difficulty } = gamecontext;
+    const { board, setBoard, fixedCells, setFixedCells, difficulty, setDifficulty, setIsDifficultySet } = gamecontext;
+
+    // Loading state to control visibility
+    const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
 
       // Only generate the puzzle if the difficulty is set to a valid value
       if (difficulty) {
 
-      const completeBoard = generateSudoku(); // Generate a complete board and then create a puzzle based on difficulty
-      const puzzleBoard = createPuzzle(completeBoard, difficulty); // Adjust difficulty here
+      setLoading(true); // Start loading
+      const timeout = setTimeout(() => {
 
-      setBoard(puzzleBoard);
-      setFixedCells(puzzleBoard.map(row => row.map(cell => cell !== 0))); //Mark fixed cells
+        const completeBoard = generateSudoku(); // Generate a complete board and then create a puzzle based on difficulty
+        const puzzleBoard = createPuzzle(completeBoard, difficulty); // Adjust difficulty here
 
-      // Debugging: Check board and fixedCells initialization
-      console.log('Puzzle Board Initialized:', puzzleBoard);
-      console.log('Fixed Cells Initialized:', puzzleBoard.map(row => row.map(cell => cell !== 0)));
-      console.log('Difficulty:', difficulty);
+        setBoard(puzzleBoard);
+        setFixedCells(puzzleBoard.map(row => row.map(cell => cell !== 0))); //Mark fixed cells
+        setLoading(false); // Stop loading
+
+        // Debugging: Check board and fixedCells initialization
+        console.log('Puzzle Board Initialized:', puzzleBoard);
+        console.log('Fixed Cells Initialized:', puzzleBoard.map(row => row.map(cell => cell !== 0)));
+        console.log('Difficulty:', difficulty);
+
+      }, 500); // Adjust the delay (in milliseconds)
+
+      return () => clearTimeout(timeout); // Cleanup timeout
 
       }
 
@@ -51,7 +62,14 @@ export default function useSudokuLogic() {
       console.log('Updated Board:', newBoard);
   };
 
-  return { board, fixedCells, updateCell };
+  const resetGame = () => {
+    setIsDifficultySet(false); // Clear the difficulty selection
+    setDifficulty(''); // Clear the difficulty itself
+    setBoard([]); // Reset the board
+    setFixedCells([]); // Clear fixed cells
+  };
+
+  return { board, fixedCells, updateCell, resetGame, loading };
 
 };
 
