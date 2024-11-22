@@ -69,7 +69,45 @@ export default function useSudokuLogic() {
     setFixedCells([]); // Clear fixed cells
   };
 
-  return { board, fixedCells, updateCell, resetGame, loading };
+  // Validate the entire Sudoku Board
+  const validateBoard = () => {
+
+    const isValidSudoku = (board: number[][]): boolean => {
+        const rows = new Set();
+        const cols = new Set();
+        const grids = new Set();
+
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
+                const num = board[row][col];
+                if (num === 0) return false; // Incomplete board
+
+                const rowKey = `row-${row}-${num}`;
+                const colKey = `col-${col}-${num}`;
+                const gridKey = `grid-${Math.floor(row / 3)}-${Math.floor(col / 3)}-${num}`;
+
+                if (rows.has(rowKey) || cols.has(colKey) || grids.has(gridKey)) {
+                    return false; // Duplicate number in row, column, or grid
+                }
+
+                rows.add(rowKey);
+                cols.add(colKey);
+                grids.add(gridKey);
+            }
+        }
+        return true;
+    };
+
+    // Check the board and show a message
+    if (isValidSudoku(board)) {
+        Alert.alert('Congratulations!', 'The Sudoku puzzle is solved correctly!', [{ text: 'OK' }]);
+    } else {
+        Alert.alert('Not There Yet!', 'The puzzle is incorrect or incomplete.', [{ text: 'Try Again' }]);
+    }
+
+};
+
+  return { board, fixedCells, updateCell, resetGame, loading, validateBoard };
 
 };
 

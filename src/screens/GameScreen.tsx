@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View, StyleSheet, ActivityIndicator, Pressable, Text } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Pressable, Text, KeyboardAvoidingView, Platform } from 'react-native';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
 import Grid from '../components/SudokuFullGrid';
@@ -16,10 +16,13 @@ export default function GameScreen() {
       }
 
     const { isDifficultySet } = gameContext;
-    const { board, fixedCells, updateCell, resetGame, loading } = useSudokuLogic();
+    const { board, fixedCells, updateCell, resetGame, loading, validateBoard } = useSudokuLogic();
 
     return (
-        <View style={styles.container}>
+
+        <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'android' ? 'padding' : undefined}>
 
             {loading && (
                 <View style={styles.loadingcontainer}>
@@ -28,20 +31,24 @@ export default function GameScreen() {
                 </View>
             )}
 
-            {isDifficultySet && (
-                <Pressable style={styles.resetButtoncontainer} onPress={resetGame}>
-                    <SimpleLineIcons name="reload" size={24} color="#FFFFFF" />
-                    <Text style={styles.buttonText}>Reset</Text>
-                </Pressable>
-            )}
-
             {isDifficultySet ? (
-                <Grid board={board} fixedCells={fixedCells} onCellChange={updateCell} />
+                <View style={styles.container}>
+                    <Pressable style={styles.resetButtoncontainer} onPress={resetGame}>
+                        <SimpleLineIcons name="reload" size={24} color="#FFFFFF" />
+                        {/* <Text style={styles.buttonText}>Reset</Text> */}
+                    </Pressable>
+                    <Grid board={board} fixedCells={fixedCells} onCellChange={updateCell} />
+                    <Pressable style={styles.validateButtonContainer} onPress={validateBoard}>
+                        {/* <SimpleLineIcons name="check" size={24} color="#FFFFFF" /> */}
+                        <Text style={styles.buttonText}>Validate</Text>
+                    </Pressable>
+                </View>
             ) : (
                 <DifficultySelector />
             )}
 
-        </View>
+        </KeyboardAvoidingView>
+
     );
 
 };
@@ -78,6 +85,18 @@ const styles = StyleSheet.create({
         zIndex: 1, // Ensure the button appears on top
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    validateButtonContainer: {
+        position: 'absolute',
+        bottom: 20, // Adjust this value to control the distance from the bottom of the screen
+        alignSelf: 'center', // Centers the button horizontally
+        backgroundColor: '#2e8b57',
+        padding: 10,
+        borderRadius: 20,
+        elevation: 2,
+        shadowColor: '#000',
+        justifyContent: 'center',
+        alignItems: 'center', 
     },
     buttonText: {
         flexDirection: 'row',

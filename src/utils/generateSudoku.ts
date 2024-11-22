@@ -30,6 +30,15 @@ const isValid = (board: number[][], row: number, col: number, num: number): bool
     return true; // If no conflicts, return true indicating placement is valid
 };
 
+// Utility function to shuffle an array
+const shuffleArray = (array: number[]): number[] => {
+    for (let i = array.length - 1; i > 0; i--) { 
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+};
+
 // Backtracking function to generate the Sudoku board
 const generateBoard = (board: number[][]): boolean => {
 
@@ -39,8 +48,9 @@ const generateBoard = (board: number[][]): boolean => {
 
             if (board[row][col] === 0) { // Find an empty cell (value is 0)
 
-                // Try numbers 1 to 9
-                for (let num = 1; num <= 9; num++) {
+                // Try numbers 1 to 9 that are ordered randomly
+                const shufflednumbers = shuffleArray([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+                for (let num of shufflednumbers) {
                     if (isValid(board, row, col, num)) {
                         board[row][col] = num; // Place the number
                         
