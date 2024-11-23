@@ -1,12 +1,14 @@
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useRef } from 'react';
 import { Alert } from 'react-native';
 
 import { GameContext } from '../context/GameContext';
 import { generateSudoku, createPuzzle } from '../utils/generateSudoku';
+import { TimerRef } from '../components/Timer';
 
 export default function useSudokuLogic() {
 
     const gamecontext = useContext(GameContext);
+    const timerRef = useRef<TimerRef | null>(null);
 
     if (!gamecontext) {
         Alert.alert('Sudoku Logic Failed!!!');
@@ -14,7 +16,7 @@ export default function useSudokuLogic() {
     }
 
     const { board, setBoard, fixedCells, setFixedCells, difficulty, setDifficulty, setIsDifficultySet } = gamecontext;
-
+    
     // Loading state to control visibility
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -32,8 +34,10 @@ export default function useSudokuLogic() {
         setBoard(puzzleBoard);
         setFixedCells(puzzleBoard.map(row => row.map(cell => cell !== 0))); //Mark fixed cells
         setLoading(false); // Stop loading
+        timerRef.current?.startTimer();
 
         // Debugging: Check board and fixedCells initialization
+        console.log('Complete Board Initialized:', completeBoard);
         console.log('Puzzle Board Initialized:', puzzleBoard);
         console.log('Fixed Cells Initialized:', puzzleBoard.map(row => row.map(cell => cell !== 0)));
         console.log('Difficulty:', difficulty);
@@ -67,6 +71,7 @@ export default function useSudokuLogic() {
     setDifficulty(''); // Clear the difficulty itself
     setBoard([]); // Reset the board
     setFixedCells([]); // Clear fixed cells
+    timerRef.current?.resetTimer(); // Safely call resetTimer to reset the timer
   };
 
   // Validate the entire Sudoku Board
@@ -110,4 +115,6 @@ export default function useSudokuLogic() {
   return { board, fixedCells, updateCell, resetGame, loading, validateBoard };
 
 };
+
+
 

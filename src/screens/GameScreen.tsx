@@ -6,6 +6,8 @@ import Grid from '../components/SudokuFullGrid';
 import useSudokuLogic from '../hooks/useSudokuLogic';
 import { GameContext } from '../context/GameContext';
 import DifficultySelector from '../components/DifficultySelector';
+import { takeScreenshot } from '../utils/Screenshot';
+import Timer from '../components/Timer';
 
 export default function GameScreen() {
     
@@ -33,13 +35,15 @@ export default function GameScreen() {
 
             {isDifficultySet ? (
                 <View style={styles.container}>
+                    <Timer />
                     <Pressable style={styles.resetButtoncontainer} onPress={resetGame}>
                         <SimpleLineIcons name="reload" size={24} color="#FFFFFF" />
-                        {/* <Text style={styles.buttonText}>Reset</Text> */}
+                    </Pressable>
+                    <Pressable style={styles.screenshotButtoncontainer} onPress={takeScreenshot}>
+                        <SimpleLineIcons name="camera" size={24} color="#FFFFFF" />
                     </Pressable>
                     <Grid board={board} fixedCells={fixedCells} onCellChange={updateCell} />
                     <Pressable style={styles.validateButtonContainer} onPress={validateBoard}>
-                        {/* <SimpleLineIcons name="check" size={24} color="#FFFFFF" /> */}
                         <Text style={styles.buttonText}>Validate</Text>
                     </Pressable>
                 </View>
@@ -76,6 +80,19 @@ const styles = StyleSheet.create({
     resetButtoncontainer: {
         position: 'absolute',
         top: 10,
+        right: 10,
+        backgroundColor: '#2e8b57', 
+        padding: 10,
+        borderRadius: 20, // Circular button
+        elevation: 2, // Adds a shadow (Android)
+        shadowColor: '#000', // For iOS shadow
+        zIndex: 1, // Ensure the button appears on top
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    screenshotButtoncontainer: {
+        position: 'absolute',
+        top: 70,
         right: 10,
         backgroundColor: '#2e8b57', 
         padding: 10,
