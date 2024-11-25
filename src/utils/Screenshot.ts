@@ -1,7 +1,7 @@
 import { PermissionsAndroid, Platform, Alert, Linking } from 'react-native';
 import { captureScreen } from 'react-native-view-shot';
-import { request, PERMISSIONS, RESULTS, PermissionStatus } from 'react-native-permissions';
-import RNFetchBlob from 'rn-fetch-blob';
+import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import RNFS from 'react-native-fs';
 
 function showPermissionAlert() {
     Alert.alert(
@@ -19,8 +19,19 @@ async function requestStoragePermission(): Promise<boolean> {
     if (Platform.OS === 'android') {
 
         try {
+            if (Platform.Version >= 33) {
+                // Android 13+ (API 33+)
+                const PermissionStatusLatestAndroid = await request(PERMISSIONS.ANDROID.READ_MEDIA_IMAGES);
+                console.log('Media Storage Permission:', PermissionStatusLatestAndroid);
 
-            if (Platform.Version >= 29) {
+                if ( PermissionStatusLatestAndroid === RESULTS.GRANTED ) {
+                    console.log('Latest Android permission granted!!!');
+                    return true;
+                } else {
+                    showPermissionAlert();
+                    return false;
+                }
+            } else if (Platform.Version >= 29) {
                 // For Android 10+ (Scoped Storage)
                 const PermissionStatusNewAndroid = await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
                 console.log('Scoped Storage Permission:', PermissionStatusNewAndroid);
@@ -101,41 +112,30 @@ export async function takeScreenshot(): Promise<void> {
 
         console.log('Screenshot URI:', uri);
 
-        // Get the file data
-        const fileData = await RNFetchBlob.fs.readFile(uri, 'base64');
         // Create the file name
         const fileName = `screenshot_${Date.now()}.jpg`;
 
         if (Platform.OS === 'android') {
+
             // Save using MediaStore for Android 10+
-            const imageDetails = {
-                title: fileName,
-                description: 'Screenshot captured by the Sudoku app',
-                mimeType: 'image/jpeg',
-                base64Data: fileData,
-            };
+            const filePath = `${RNFS.PicturesDirectoryPath}/${fileName}`;
+            await RNFS.copyFile(uri, filePath);
 
-            const success = await saveImageToMediaStore(imageDetails);
-
-            if (success) {
-                Alert.alert('Android Screenshot Saved', 'Your screenshot has been saved to the gallery!');
-            } else {
-                Alert.alert('Failed to save screenshot to MediaStore');
-            }
+            Alert.alert('Screenshot Saved', 'Your screenshot has been saved to the gallery!');
+            console.log('Screenshot saved at:', filePath);
 
         } else if (Platform.OS === 'ios') {
 
             try {
-                const filePath = `${RNFetchBlob.fs.dirs.DocumentDir}/${fileName}`;
-                await RNFetchBlob.fs.writeFile(
-                    filePath,
-                    fileData,
-                    'base64'
-                );
+
+                const filePath = `${RNFS.DocumentDirectoryPath}/${fileName}`;
+                await RNFS.copyFile(uri, filePath);
+               
                 Alert.alert('Screenshot Saved', `Your screenshot has been saved to: ${filePath}`);
             } catch (error) {
                 console.error('Failed to save screenshot on iOS:', error);
                 Alert.alert('Error', 'Failed to save screenshot on iOS. Please try again.');
+
             }
 
         }
@@ -143,21 +143,6 @@ export async function takeScreenshot(): Promise<void> {
     } catch (error) {
         console.error('Error capturing screenshot:', error);
         Alert.alert('Error', 'Failed to take a screenshot. Please try again.');
-    }
-
-}
-
-async function saveImageToMediaStore( { title, description, mimeType, base64Data }: any ): Promise<boolean> {
-
-    try {
-
-        const { dirs } = RNFetchBlob.fs;
-        const filePath = `${dirs.PictureDir}/${title}`;
-        await RNFetchBlob.fs.writeFile(filePath, base64Data, 'base64');
-        return true;
-    } catch (error) {
-        console.error('Error saving to MediaStore:', error);
-        return false;
     }
 
 }
