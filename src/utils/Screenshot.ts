@@ -19,21 +19,11 @@ async function requestStoragePermission(): Promise<boolean> {
     if (Platform.OS === 'android') {
 
         try {
-            if (Platform.Version >= 33) {
-                // Android 13+ (API 33+)
-                const PermissionStatusLatestAndroid = await request(PERMISSIONS.ANDROID.READ_MEDIA_IMAGES);
-                console.log('Media Storage Permission:', PermissionStatusLatestAndroid);
 
-                if ( PermissionStatusLatestAndroid === RESULTS.GRANTED ) {
-                    console.log('Latest Android permission granted!!!');
-                    return true;
-                } else {
-                    showPermissionAlert();
-                    return false;
-                }
-            } else if (Platform.Version >= 29) {
-                // For Android 10+ (Scoped Storage)
-                const PermissionStatusNewAndroid = await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+            if (Platform.Version <= 29) {
+
+                // For Android 10 and below (Scoped Storage)
+                const PermissionStatusNewAndroid = await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE);
                 console.log('Scoped Storage Permission:', PermissionStatusNewAndroid);
 
                 if ( PermissionStatusNewAndroid === RESULTS.GRANTED ) {
@@ -44,29 +34,9 @@ async function requestStoragePermission(): Promise<boolean> {
                     return false;
                 }
 
-            } else {
-                // For Android 9 and below               
-                const PermissionStatusOldAndroid = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-                    {
-                        title: 'Storage Permission Required',
-                        message: 'This app needs access to your storage to save screenshots.',
-                        buttonNeutral: 'Ask Me Later',
-                        buttonNegative: 'Cancel',
-                        buttonPositive: 'OK',
-                    }
-                );
-                console.log('Legacy Android Storage Permission:', PermissionStatusOldAndroid);
-                
-                if ( PermissionStatusOldAndroid === PermissionsAndroid.RESULTS.GRANTED ) {
-                    console.log('Old Android permission granted!!!');
-                    return true;
-                } else {
-                    showPermissionAlert();
-                    return false;
-                }
-                
             }
+
+            return  true;
             
         } catch (err) {
             console.log('Permission request error:', err);
@@ -93,15 +63,15 @@ async function requestStoragePermission(): Promise<boolean> {
 
 export async function takeScreenshot(): Promise<void> {
 
-    const hasPermission = await requestStoragePermission();
+    // const hasPermission = await requestStoragePermission();
 
-    if (!hasPermission) {
-        Alert.alert(
-            'Permission Denied',
-            'You need to grant storage permission to take a screenshot.'
-        );
-        return;
-    }
+    // if (!hasPermission) {
+    //     Alert.alert(
+    //         'Permission Denied',
+    //         'You need to grant storage permission to take a screenshot.'
+    //     );
+    //     return;
+    // }
 
     try {
         // Capture the screenshot
@@ -119,6 +89,7 @@ export async function takeScreenshot(): Promise<void> {
 
             // Save using MediaStore for Android 10+
             const filePath = `${RNFS.PicturesDirectoryPath}/${fileName}`;
+            console.log('File path: ', filePath);
             await RNFS.copyFile(uri, filePath);
 
             Alert.alert('Screenshot Saved', 'Your screenshot has been saved to the gallery!');
