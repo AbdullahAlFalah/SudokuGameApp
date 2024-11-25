@@ -7,7 +7,6 @@ import useSudokuLogic from '../hooks/useSudokuLogic';
 import { GameContext } from '../context/GameContext';
 import DifficultySelector from '../components/DifficultySelector';
 import { takeScreenshot } from '../utils/Screenshot';
-import Timer from '../components/Timer';
 
 export default function GameScreen() {
     
@@ -35,7 +34,7 @@ export default function GameScreen() {
 
             {isDifficultySet ? (
                 <View style={styles.container}>
-                    <Timer />
+                    
                     <Pressable style={styles.resetButtoncontainer} onPress={resetGame}>
                         <SimpleLineIcons name="reload" size={24} color="#FFFFFF" />
                     </Pressable>

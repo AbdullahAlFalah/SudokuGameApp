@@ -44,6 +44,7 @@ async function requestStoragePermission(): Promise<boolean> {
         }
     
     } else {
+
         // Request PHOTO_LIBRARY permission for iOS
         const iosLibrary = PERMISSIONS.IOS.PHOTO_LIBRARY;
         const iosPermission = await request(iosLibrary);
@@ -57,21 +58,22 @@ async function requestStoragePermission(): Promise<boolean> {
             console.log('iOS Permission denied!!!');
             return false;
         }
+        
     }
 
 }
 
 export async function takeScreenshot(): Promise<void> {
 
-    // const hasPermission = await requestStoragePermission();
+    const hasPermission = await requestStoragePermission();
 
-    // if (!hasPermission) {
-    //     Alert.alert(
-    //         'Permission Denied',
-    //         'You need to grant storage permission to take a screenshot.'
-    //     );
-    //     return;
-    // }
+    if (!hasPermission) {
+        Alert.alert(
+            'Permission Denied',
+            'You need to grant storage permission to take a screenshot.'
+        );
+        return;
+    }
 
     try {
         // Capture the screenshot
