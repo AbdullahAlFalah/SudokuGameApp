@@ -3,12 +3,11 @@ import { Alert } from 'react-native';
 
 import { GameContext } from '../context/GameContext';
 import { generateSudoku, createPuzzle } from '../utils/generateSudoku';
-import { TimerRef } from '../components/Timer';
+import createTimer from '../utils/Timer';
 
 export default function useSudokuLogic() {
 
     const gamecontext = useContext(GameContext);
-    const timerRef = useRef<TimerRef | null>(null);
 
     if (!gamecontext) {
         Alert.alert('Sudoku Logic Failed!!!');
@@ -20,21 +19,30 @@ export default function useSudokuLogic() {
     // Loading state to control visibility
     const [loading, setLoading] = useState<boolean>(false);
 
+    // Timer integration
+    const [elapsedTime, setElapsedTime] = useState<number>(0);
+    const timer = useRef(
+        createTimer((currentTime) => setElapsedTime(currentTime))
+    ).current;
+
     useEffect(() => {
 
       // Only generate the puzzle if the difficulty is set to a valid value
       if (difficulty) {
 
-      setLoading(true); // Start loading
-      const timeout = setTimeout(() => {
+        timer.reset(); // Reset the timer  
+        timer.start(); // Start the timer automatically
+
+        setLoading(true); // Start loading
+        const timeout = setTimeout(() => {
 
         const completeBoard = generateSudoku(); // Generate a complete board and then create a puzzle based on difficulty
         const puzzleBoard = createPuzzle(completeBoard, difficulty); // Adjust difficulty here
 
         setBoard(puzzleBoard);
-        setFixedCells(puzzleBoard.map(row => row.map(cell => cell !== 0))); //Mark fixed cells
+        setFixedCells( puzzleBoard.map(row => row.map(cell => cell !== 0)) ); //Mark fixed cells
         setLoading(false); // Stop loading
-        timerRef.current?.startTimer();
+        
 
         // Debugging: Check board and fixedCells initialization
         console.log('Complete Board Initialized:', completeBoard);
@@ -42,11 +50,17 @@ export default function useSudokuLogic() {
         console.log('Fixed Cells Initialized:', puzzleBoard.map(row => row.map(cell => cell !== 0)));
         console.log('Difficulty:', difficulty);
 
-      }, 500); // Adjust the delay (in milliseconds)
+        }, 500); // Adjust the delay (in milliseconds)
 
-      return () => clearTimeout(timeout); // Cleanup timeout
+        return () => {
+          clearTimeout(timeout); // Cleanup timeout
+        };
 
-      }
+      };
+
+      return () => {
+        timer.pause(); // Stop the timer if difficulty is cleared
+      };
 
     }, [difficulty, setBoard, setFixedCells]);
 
@@ -71,7 +85,8 @@ export default function useSudokuLogic() {
     setDifficulty(''); // Clear the difficulty itself
     setBoard([]); // Reset the board
     setFixedCells([]); // Clear fixed cells
-    timerRef.current?.resetTimer(); // Safely call resetTimer to reset the timer
+    
+    timer.reset(); // Reset the timer
   };
 
   // Validate the entire Sudoku Board
@@ -112,7 +127,7 @@ export default function useSudokuLogic() {
 
 };
 
-  return { board, fixedCells, updateCell, resetGame, loading, validateBoard };
+  return { board, fixedCells, updateCell, resetGame, loading, validateBoard, elapsedTime };
 
 };
 
