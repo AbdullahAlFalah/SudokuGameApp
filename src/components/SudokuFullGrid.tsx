@@ -18,6 +18,8 @@ export default function Grid ( { board, fixedCells, onCellChange } : GridProps) 
                   key={`${rowIndex}-${colIndex}`}
                   value={cellValue}
                   onChange={(value) => onCellChange(rowIndex, colIndex, value)}
+                  rowIndex={rowIndex}
+                  colIndex={colIndex}
                   isFixed={fixedCells[rowIndex][colIndex]} // Set readonly for fixed cells
                 />
               ))}
@@ -29,8 +31,10 @@ export default function Grid ( { board, fixedCells, onCellChange } : GridProps) 
 
 const styles = StyleSheet.create({
     grid: {
-      width: 350,
-      height: 350,
+      width: 360, // 9 cells * 40px each
+      height: 360, // 9 cells * 40px each
+      borderWidth: 2,
+      borderColor: '#4682b4', // Outer grid bold border
     },
     row: {
       flexDirection: 'row', // Place cells in each row in a single line
