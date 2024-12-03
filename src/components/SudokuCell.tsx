@@ -2,16 +2,16 @@ import React, { useState } from 'react';
 import { Text, View, TouchableOpacity, Modal, StyleSheet, Dimensions } from 'react-native';
 
 interface SudokuCellProps {
-  value: number | null; // Allow `null` for empty cells
+  value: number; 
   isFixed: boolean;
-  onChange: (value: number | null) => void; // Allow `null` for clearing the value
+  onChange: (value: number) => void; 
 }
 
 export default function SudokuCell ({ value, isFixed, onChange }: SudokuCellProps) {
 
   const [isPickerVisible, setPickerVisible] = useState<boolean>(false);
 
-  const handleNumberSelect = (number: number | null) => {
+  const handleNumberSelect = ( number: number ) => {
     setPickerVisible(false); // Close the modal
     onChange(number); // Update the cell value
   };

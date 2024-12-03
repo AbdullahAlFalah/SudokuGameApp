@@ -2,8 +2,8 @@ import React, { createContext, useState, ReactNode } from 'react';
 
 // Game state with context types
 interface GameState {
-    board: ( number | null ) [][]; // 9x9 board array
-    setBoard: (board: ( number | null ) [][]) => void;
+    board: ( number ) [][]; // 9x9 board array
+    setBoard: (board: ( number ) [][]) => void;
     fixedCells: boolean[][];
     setFixedCells: (fixedCells: boolean[][]) => void;
     selectedCell: { row: number; col: number } | null;
@@ -20,7 +20,7 @@ export default function GameContextProvider( { children }: { children: ReactNode
     const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null);
     const [difficulty, setDifficulty] = useState<string>('');
     const [isDifficultySet, setIsDifficultySet] = useState<boolean>(false);
-    const [board, setBoard] = useState<( number | null )[][]>([]);
+    const [board, setBoard] = useState<( number )[][]>([]);
     const [fixedCells, setFixedCells] = useState<boolean[][]>([]);
     
     return (

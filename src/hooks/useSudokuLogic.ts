@@ -65,7 +65,7 @@ export default function useSudokuLogic() {
     }, [difficulty, setBoard, setFixedCells]);
 
     // Update a cell only if it's not fixed
-    const updateCell = (row: number, col: number, value: number | null) => {
+    const updateCell = (row: number, col: number, value: number) => {
       if (fixedCells[row][col]) {
         Alert.alert("Can't change a fixed cell!");
         return;
@@ -92,7 +92,7 @@ export default function useSudokuLogic() {
   // Validate the entire Sudoku Board
   const validateBoard = () => {
 
-    const isValidSudoku = (board: ( number | null ) [][]): boolean => {
+    const isValidSudoku = (board: ( number ) [][]): boolean => {
         const rows = new Set();
         const cols = new Set();
         const grids = new Set();
