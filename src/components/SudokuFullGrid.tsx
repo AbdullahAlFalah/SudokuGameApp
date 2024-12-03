@@ -3,9 +3,9 @@ import { View, StyleSheet } from 'react-native';
 import SudokuCell from './SudokuCell';
 
 interface GridProps {
-  board: number[][];
+  board: ( number | null ) [][];
   fixedCells: boolean[][];
-  onCellChange: (row: number, col: number, value: number) => void;
+  onCellChange: (row: number, col: number, value: number | null) => void;
 }
 
 export default function Grid ( { board, fixedCells, onCellChange } : GridProps) {

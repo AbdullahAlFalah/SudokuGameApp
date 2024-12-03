@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View, StyleSheet, ActivityIndicator, Pressable, Text, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Pressable, Text } from 'react-native';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
 import Grid from '../components/SudokuFullGrid';
@@ -22,9 +22,7 @@ export default function GameScreen() {
 
     return (
 
-        <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'android' ? 'padding' : undefined}>
+        <View style={styles.container}>
 
             {loading && (
                 <View style={styles.loadingcontainer}>
@@ -51,7 +49,7 @@ export default function GameScreen() {
                 <DifficultySelector />
             )}
 
-        </KeyboardAvoidingView>
+        </View>
 
     );
 
