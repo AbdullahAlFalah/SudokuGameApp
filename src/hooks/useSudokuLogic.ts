@@ -120,6 +120,7 @@ export default function useSudokuLogic() {
 
     // Check the board and show a message
     if (isValidSudoku(board)) {
+        
         Alert.alert('Congratulations!', 'The Sudoku puzzle is solved correctly!', [{ text: 'OK' }]);
     } else {
         Alert.alert('Not There Yet!', 'The puzzle is incorrect or incomplete.', [{ text: 'Try Again' }]);
