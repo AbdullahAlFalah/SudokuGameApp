@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { View, StyleSheet, ActivityIndicator, Pressable, Text } from 'react-native';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import ConfettiCannon from 'react-native-confetti-cannon';
 
 import Grid from '../components/SudokuFullGrid';
 import useSudokuLogic from '../hooks/useSudokuLogic';
@@ -18,7 +19,7 @@ export default function GameScreen() {
       }
 
     const { isDifficultySet } = gameContext;
-    const { board, fixedCells, updateCell, resetGame, loading, validateBoard } = useSudokuLogic();
+    const { board, fixedCells, updateCell, resetGame, loading, validateBoard, confettiVisible } = useSudokuLogic();
 
     return (
 
@@ -29,6 +30,14 @@ export default function GameScreen() {
                     {/* Show loading spinner while the board is being generated */}
                     <ActivityIndicator size="large" color="#0000ff" />
                 </View>
+            )}
+
+            {confettiVisible && (
+                <ConfettiCannon
+                    count={100}
+                    origin={{ x: 200, y: 0 }}
+                    fadeOut={true}
+                />
             )}
 
             {isDifficultySet ? (

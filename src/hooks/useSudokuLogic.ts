@@ -3,6 +3,7 @@ import { Alert } from 'react-native';
 
 import { GameContext } from '../context/GameContext';
 import { generateSudoku, createPuzzle } from '../utils/generateSudoku';
+import isValidSudoku from '../utils/ValidateSudoku';
 import createTimer from '../utils/Timer';
 
 export default function useSudokuLogic() {
@@ -18,6 +19,9 @@ export default function useSudokuLogic() {
     
     // Loading state to control visibility
     const [loading, setLoading] = useState<boolean>(false);
+
+    // Confetti visibility state to control visibility
+    const [confettiVisible, setConfettiVisible] = useState(false);
 
     // Timer integration
     const [elapsedTime, setElapsedTime] = useState<number>(0);
@@ -92,35 +96,10 @@ export default function useSudokuLogic() {
   // Validate the entire Sudoku Board
   const validateBoard = () => {
 
-    const isValidSudoku = (board: ( number ) [][]): boolean => {
-        const rows = new Set();
-        const cols = new Set();
-        const grids = new Set();
-
-        for (let row = 0; row < 9; row++) {
-            for (let col = 0; col < 9; col++) {
-                const num = board[row][col];
-                if (num === 0) return false; // Incomplete board
-
-                const rowKey = `row-${row}-${num}`;
-                const colKey = `col-${col}-${num}`;
-                const gridKey = `grid-${Math.floor(row / 3)}-${Math.floor(col / 3)}-${num}`;
-
-                if (rows.has(rowKey) || cols.has(colKey) || grids.has(gridKey)) {
-                    return false; // Duplicate number in row, column, or grid
-                }
-
-                rows.add(rowKey);
-                cols.add(colKey);
-                grids.add(gridKey);
-            }
-        }
-        return true;
-    };
-
     // Check the board and show a message
     if (isValidSudoku(board)) {
-        
+        setConfettiVisible(true); // Trigger confetti animation
+        setTimeout(() => setConfettiVisible(false), 3000); // Stop confetti after 3 seconds
         Alert.alert('Congratulations!', 'The Sudoku puzzle is solved correctly!', [{ text: 'OK' }]);
     } else {
         Alert.alert('Not There Yet!', 'The puzzle is incorrect or incomplete.', [{ text: 'Try Again' }]);
@@ -128,7 +107,7 @@ export default function useSudokuLogic() {
 
 };
 
-  return { board, fixedCells, updateCell, resetGame, loading, validateBoard, elapsedTime };
+  return { board, fixedCells, updateCell, resetGame, loading, validateBoard, confettiVisible, elapsedTime };
 
 };
 
