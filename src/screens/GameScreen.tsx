@@ -34,9 +34,12 @@ export default function GameScreen() {
 
             {confettiVisible && (
                 <ConfettiCannon
-                    count={100}
-                    origin={{ x: 200, y: 0 }}
-                    fadeOut={true}
+                    count={40}         // Reduce the particle count
+                    origin={{ x: 0, y: 0 }} // Optimize the animation's origin
+                    fadeOut={true}     // Enable fade-out for smoother visuals
+                    autoStart={true}   // Ensure animation starts automatically
+                    explosionSpeed={200}  // Adjust animation speed (default is 350)
+                    fallSpeed={1000}   // Adjust how fast particles fall
                 />
             )}
 

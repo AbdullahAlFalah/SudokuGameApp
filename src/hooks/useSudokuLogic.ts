@@ -105,7 +105,7 @@ export default function useSudokuLogic() {
         Alert.alert('Not There Yet!', 'The puzzle is incorrect or incomplete.', [{ text: 'Try Again' }]);
     }
 
-};
+  };
 
   return { board, fixedCells, updateCell, resetGame, loading, validateBoard, confettiVisible, elapsedTime };
 
