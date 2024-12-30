@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet, NativeModules, Pressable } from 'react-native';
+import { View, Text, StyleSheet, NativeModules, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { HomeScreenNavigationProp } from '../navigation/ScreenTypeProps';
@@ -15,6 +15,9 @@ export default function HomeScreen () {
             <Text style={styles.title}>Welcome to Sudoku</Text>
             <Pressable style={styles.buttonContainer} onPress={() => navigation.navigate('Game')}>
               <Text style={styles.buttonText}>Start Game</Text>
+            </Pressable>
+            <Pressable style={styles.buttonContainer} onPress={() => navigation.navigate('Theme')}>
+              <Text style={styles.buttonText}>Theme</Text>
             </Pressable>
             <Pressable style={styles.buttonContainer} onPress={() => ExitApp.exit()}>
               <Text style={styles.buttonText}>Exit</Text>
