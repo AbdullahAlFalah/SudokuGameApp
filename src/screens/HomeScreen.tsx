@@ -1,12 +1,14 @@
 import React from 'react';
-import { Text, StyleSheet, NativeModules, Pressable, ImageBackground } from 'react-native';
+import { Text, StyleSheet, Pressable, ImageBackground, BackHandler } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { HomeScreenNavigationProp } from '../navigation/ScreenTypeProps';
 import { useTheme } from '../context/ThemeContext';
 import { getThemeStyles } from '../Theme/ThemeStyles';
 
-const { ExitApp } = NativeModules; // For closing the app
+const handleExit = () => {
+  BackHandler.exitApp(); // For closing the app on Android only
+}; 
 
 export default function HomeScreen () {
 
@@ -22,13 +24,16 @@ export default function HomeScreen () {
           resizeMode='cover' // Enable this to stretch the background image to fill the screen
           >
             <Text style={[styles.title, Themestyles.text]}>Welcome to Sudoku</Text>
-            <Pressable style={styles.buttonContainer} onPress={() => navigation.navigate('Game')}>
+            <Pressable style={styles.buttonContainer} onPress={() => navigation.navigate('Game')}
+              android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}>
               <Text style={styles.buttonText}>Start Game</Text>
             </Pressable>
-            <Pressable style={styles.buttonContainer} onPress={() => navigation.navigate('Theme')}>
+            <Pressable style={styles.buttonContainer} onPress={() => navigation.navigate('Theme')}
+              android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}>
               <Text style={styles.buttonText}>Theme</Text>
             </Pressable>
-            <Pressable style={styles.buttonContainer} onPress={() => ExitApp.exit()}>
+            <Pressable style={styles.buttonContainer} onPress={handleExit}
+              android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}>
               <Text style={styles.buttonText}>Exit</Text>
             </Pressable>
         </ImageBackground>
