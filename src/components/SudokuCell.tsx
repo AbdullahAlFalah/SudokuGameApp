@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Text, View, TouchableOpacity, Modal, StyleSheet, Dimensions } from 'react-native';
 
 import NumberPickerModal from './NumberPicker';
+import { useTheme } from '../context/ThemeContext';
+import { getThemeStyles } from '../Theme/ThemeStyles';
 
 interface SudokuCellProps {
   value: number; 
@@ -14,6 +16,9 @@ export default function SudokuCell ({ value, isFixed, onChange }: SudokuCellProp
   const [isPickerVisible, setPickerVisible] = useState<boolean>(false);
   const [selectedNumber, setSelectedNumber] = useState<number>(0);
 
+  const {theme, background} = useTheme();
+  const Themestyles = getThemeStyles(theme, background);
+
   const handleNumberSelect = ( number: number ) => {
     setPickerVisible(false); // Close the modal
     setSelectedNumber(number); // Update local state
@@ -25,8 +30,8 @@ export default function SudokuCell ({ value, isFixed, onChange }: SudokuCellProp
 
       {/* Cell */}
       {isFixed ? (
-        <View style={[styles.Normalcell, styles.fixedCell]}>
-          <Text style={styles.fixedText}>{value}</Text>
+        <View style={[styles.Normalcell, styles.fixedCell, Themestyles.container]}>
+          <Text style={[styles.fixedText, Themestyles.text]}>{value}</Text>
         </View>
       ) : ( 
         <TouchableOpacity style={styles.Normalcell} onPress={() => setPickerVisible(true)}>

@@ -30,6 +30,15 @@ export const getThemeStyles = ( theme: 'Light' | 'Dark', background: 'Default' |
         background: '#696969', // Dim grey for Dark theme
       }, 
     };
+
+    const boarderColors = {
+      Light: {
+        borderColor: '#000000'
+      },
+      Dark: {
+        borderColor: '#f0f8ff'
+      },
+    };
   
     return {
 
@@ -44,7 +53,9 @@ export const getThemeStyles = ( theme: 'Light' | 'Dark', background: 'Default' |
       text: {
         color: baseColors[theme].text,
       },
-      
+      boarderColor: {
+        borderColor: boarderColors[theme].borderColor,
+      },
     };
 
 };

@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View, StyleSheet, ActivityIndicator, Pressable, Text } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Pressable, Text, ImageBackground } from 'react-native';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import ConfettiCannon from 'react-native-confetti-cannon';
 
@@ -9,6 +9,8 @@ import { GameContext } from '../context/GameContext';
 import DifficultySelector from '../components/DifficultySelector';
 import { takeScreenshot } from '../utils/Screenshot';
 import Timer from '../components/Timer';
+import { useTheme } from '../context/ThemeContext';
+import { getThemeStyles } from '../Theme/ThemeStyles';
 
 export default function GameScreen() {
     
@@ -21,9 +23,16 @@ export default function GameScreen() {
     const { isDifficultySet } = gameContext;
     const { board, fixedCells, updateCell, resetGame, loading, validateBoard, confettiVisible } = useSudokuLogic();
 
+    const {theme, background} = useTheme();
+    const Themestyles = getThemeStyles(theme, background);
+
     return (
 
-        <View style={styles.container}>
+        <ImageBackground 
+            source={Themestyles.backgroundImage}
+            style={[styles.container, Themestyles.container]}
+            resizeMode='cover'
+            >
 
             {loading && (
                 <View style={styles.loadingcontainer}>
@@ -61,7 +70,7 @@ export default function GameScreen() {
                 <DifficultySelector />
             )}
 
-        </View>
+        </ImageBackground>
 
     );
 

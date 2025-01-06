@@ -1,6 +1,9 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+
 import SudokuCell from './SudokuCell';
+import { useTheme } from '../context/ThemeContext';
+import { getThemeStyles } from '../Theme/ThemeStyles';
 
 interface GridProps {
   board: ( number ) [][];
@@ -10,8 +13,11 @@ interface GridProps {
 
 export default function Grid ( { board, fixedCells, onCellChange } : GridProps) {
 
+  const {theme, background} = useTheme();
+  const Themestyles = getThemeStyles(theme, background);
+
     return (
-        <View style={styles.grid}>
+        <View style={[styles.grid, Themestyles.boarderColor]}>
           {board.map((row, rowIndex) => (
             <View key={rowIndex} style={[ styles.row,
               (rowIndex + 1) % 3 === 0 && rowIndex !== 8 && styles.subgridRow, // Bold bottom border for subgrids

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, NativeModules, Pressable, ImageBackground } from 'react-native';
+import { Text, StyleSheet, NativeModules, Pressable, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { HomeScreenNavigationProp } from '../navigation/ScreenTypeProps';
@@ -11,6 +11,7 @@ const { ExitApp } = NativeModules; // For closing the app
 export default function HomeScreen () {
 
     const navigation = useNavigation<HomeScreenNavigationProp>();
+
     const {theme, background} = useTheme();
     const Themestyles = getThemeStyles(theme, background);
 
