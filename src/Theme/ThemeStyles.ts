@@ -13,11 +13,11 @@ export const getThemeStyles = ( theme: 'Light' | 'Dark', background: 'Default' |
     };
   
     const backgroundPatterns = {
-      'Default': null ,
-      'Light Wood': require('../assets/LightWood.png'),
-      'Dark Wood': require('../assets/DarkWood.png'),
-      'White Marble': require('../assets/WhiteMarble.png'),
-      'Black Marble': require('../assets/BlackMarble.png'),
+      'Default': null,
+      'Light Wood': require('../assets/Backgrounds/LightWood.png'),
+      'Dark Wood': require('../assets/Backgrounds/DarkWood.png'),
+      'White Marble': require('../assets/Backgrounds/WhiteMarble.png'),
+      'Black Marble': require('../assets/Backgrounds/BlackMarble.png'),
     };
 
     const headerColors = {
