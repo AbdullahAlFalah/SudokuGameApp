@@ -7,18 +7,7 @@ import { generateSudoku, createPuzzle } from '../utils/generateSudoku';
 import isValidSudoku from '../utils/ValidateSudoku';
 import createTimer from '../utils/Timer';
 import { playSound } from '../utils/SoundPlayer';
-
-// Preload sound effects
-const validsolutionclick = new Sound(require('../assets/Sounds/ValidSolutionClick.wav'), Sound.MAIN_BUNDLE, (error) => {
-    if (!error) {
-      validsolutionclick.setVolume(1); // Set the volume to maximum
-    }
-  });
-const invalidsolutionclick = new Sound(require('../assets/Sounds/InvalidSolutionClick.wav'), Sound.MAIN_BUNDLE, (error) => {
-    if (!error) {
-      invalidsolutionclick.setVolume(1); // Set the volume to maximum
-    }
-  }); 
+import SoundManager from '../utils/SoundManager';
 
 export default function useSudokuLogic() {
 
@@ -78,8 +67,6 @@ export default function useSudokuLogic() {
 
       return () => {
         timer.pause(); // Stop the timer if difficulty is cleared
-        validsolutionclick.release(); // Release the sound effect
-        invalidsolutionclick.release(); // Release the sound effect
       };
 
     }, [difficulty, setBoard, setFixedCells]);
@@ -117,11 +104,17 @@ export default function useSudokuLogic() {
         setConfettiVisible(true); // Trigger confetti animation
         setTimeout(() => setConfettiVisible(false), 3000); // Stop confetti after 3 seconds
         timer.pause(); // Pause the timer
-        playSound(validsolutionclick); // Play valid solution sound
+        const sound = SoundManager.getCameraClick();
+        if (sound) {
+          playSound(sound); // Play valid solution sound
+        } 
         Alert.alert('Congratulations!', 'The Sudoku puzzle is solved correctly!', [{ text: 'OK' }]);
     } else {
-        playSound(invalidsolutionclick); // Play invalid solution sound
-        Alert.alert('Not There Yet!', 'The puzzle is incorrect or incomplete.', [{ text: 'Try Again' }]);
+      const sound = SoundManager.getInvalidSolutionClick();
+      if (sound) {
+        playSound(sound); // Play invalid solution sound
+      } 
+      Alert.alert('Not There Yet!', 'The puzzle is incorrect or incomplete.', [{ text: 'Try Again' }]);
     }
 
   };

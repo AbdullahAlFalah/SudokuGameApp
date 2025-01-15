@@ -1,8 +1,7 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { View, StyleSheet, ActivityIndicator, Pressable, Text, ImageBackground } from 'react-native';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import ConfettiCannon from 'react-native-confetti-cannon';
-import Sound from 'react-native-sound';
 
 import Grid from '../components/SudokuFullGrid';
 import useSudokuLogic from '../hooks/useSudokuLogic';
@@ -13,18 +12,7 @@ import Timer from '../components/Timer';
 import { useTheme } from '../context/ThemeContext';
 import { getThemeStyles } from '../Theme/ThemeStyles';
 import { playSound } from '../utils/SoundPlayer';
-
-// Preload sound effects
-const reloadclick = new Sound(require('../assets/Sounds/ReloadClick.wav'), Sound.MAIN_BUNDLE, (error) => {
-  if (!error) {
-    reloadclick.setVolume(1); // Set the volume to maximum
-  }
-});
-const cameraclick = new Sound(require('../assets/Sounds/CameraClick.wav'), Sound.MAIN_BUNDLE, (error) => {
-    if (!error) {
-      cameraclick.setVolume(1); // Set the volume to maximum
-    }
-  });
+import SoundManager from '../utils/SoundManager';
  
 export default function GameScreen() {
     
@@ -39,14 +27,6 @@ export default function GameScreen() {
 
     const {theme, background} = useTheme();
     const Themestyles = getThemeStyles(theme, background);
-
-    // Clean up sounds when the component is unmounted
-    useEffect(() => {
-        return () => {
-            reloadclick.release();
-            cameraclick.release();
-        };
-    }, []);
 
     return (
 
@@ -78,7 +58,12 @@ export default function GameScreen() {
                 <View style={styles.container}>
                     <Timer />
                     <Pressable style={styles.resetButtoncontainer} 
-                        onPressIn={() => playSound(reloadclick)}
+                        onPressIn={() => {
+                            const sound = SoundManager.getReloadClick();
+                            if (sound) {
+                                playSound(sound);
+                            }
+                        }}
                         onPress={resetGame}
                         android_disableSound={true}
                         android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}
@@ -86,7 +71,12 @@ export default function GameScreen() {
                         <SimpleLineIcons name="reload" size={24} color="#FFFFFF" />
                     </Pressable>
                     <Pressable style={styles.screenshotButtoncontainer} 
-                        onPressIn={() => playSound(cameraclick)}
+                        onPressIn={() => {
+                            const sound = SoundManager.getCameraClick();
+                            if (sound) {
+                                playSound(sound);
+                            }
+                        }}
                         onPress={takeScreenshot}
                         android_disableSound={true}
                         android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}

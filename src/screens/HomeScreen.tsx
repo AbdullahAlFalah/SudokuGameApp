@@ -1,23 +1,17 @@
-import React, { useEffect } from 'react';
-import { Text, StyleSheet, Pressable, ImageBackground, BackHandler, TouchableWithoutFeedback } from 'react-native';
+import React from 'react';
+import { Text, StyleSheet, Pressable, ImageBackground, BackHandler } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Sound from 'react-native-sound';
 
 import { HomeScreenNavigationProp } from '../navigation/ScreenTypeProps';
 import { useTheme } from '../context/ThemeContext';
 import { getThemeStyles } from '../Theme/ThemeStyles';
 import { playSound } from '../utils/SoundPlayer';
+import SoundManager from '../utils/SoundManager';
 
 const handleExit = () => {
+  SoundManager.releaseAll(); // Release all sounds before exiting
   BackHandler.exitApp(); // For closing the app on Android only
 }; 
-
-// Preload sound effect
-const mainclick = new Sound(require('../assets/Sounds/MainClick.wav'), Sound.MAIN_BUNDLE, (error) => {
-  if (!error) {
-    mainclick.setVolume(1); // Set the volume to maximum
-  }
-});
 
 export default function HomeScreen () {
 
@@ -25,13 +19,6 @@ export default function HomeScreen () {
 
     const {theme, background} = useTheme();
     const Themestyles = getThemeStyles(theme, background);
-
-    // Clean up sounds when the component is unmounted
-    useEffect(() => {
-      return () => {
-        mainclick.release();
-      };
-    }, []);
 
     return (
         <ImageBackground
@@ -41,7 +28,12 @@ export default function HomeScreen () {
           >
             <Text style={[styles.title, Themestyles.text]}>Welcome to Sudoku</Text>           
             <Pressable style={styles.buttonContainer} 
-              onPressIn={() => playSound(mainclick)}
+              onPressIn={() => {
+                const sound = SoundManager.getMainClick();
+                if (sound) {
+                  playSound(sound);
+                }
+              }}
               onPress={() =>  navigation.navigate('Game')}
               android_disableSound={true} // Suppress default Android click sound
               android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}
@@ -49,14 +41,24 @@ export default function HomeScreen () {
               <Text style={styles.buttonText}>Start Game</Text>
             </Pressable>      
             <Pressable style={styles.buttonContainer} 
-              onPressIn={() => playSound(mainclick)}
+              onPressIn={() => {
+                const sound = SoundManager.getMainClick();
+                if (sound) {
+                  playSound(sound);
+                }
+              }}
               onPress={() => navigation.navigate('Theme')}
               android_disableSound={true}
               android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}>
               <Text style={styles.buttonText}>Theme</Text>
             </Pressable>
             <Pressable style={styles.buttonContainer} 
-              onPressIn={() => playSound(mainclick)}
+              onPressIn={() => {
+                const sound = SoundManager.getMainClick();
+                if (sound) {
+                  playSound(sound);
+                }
+              }}
               onPress={handleExit}
               android_disableSound={true}
               android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}>
