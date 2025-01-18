@@ -4,6 +4,7 @@ import { View, Text, Pressable, StyleSheet, Animated } from 'react-native';
 import { GameContext } from '../context/GameContext';
 import { playSound } from '../utils/SoundPlayer';
 import SoundManager from '../utils/SoundManager';
+import SlideInAnimation from '../animations/SlideIn';
 
 export default function DifficultySelector() {
   
@@ -15,20 +16,20 @@ export default function DifficultySelector() {
 
   const { setDifficulty, setIsDifficultySet } = gameContext;
 
-  const translateX = useRef(new Animated.Value(300)).current;
+  const easyAnimation = new SlideInAnimation(300);
+  const mediumAnimation = new SlideInAnimation(300);
+  const hardAnimation = new SlideInAnimation(300);
 
   useEffect(() => {
-    Animated.timing(translateX, {
-      toValue: 0,
-      duration: 500,
-      useNativeDriver: true,
-    }).start();
+    easyAnimation.startAnimation(0, 500, 0);
+    mediumAnimation.startAnimation(0, 500, 200);
+    hardAnimation.startAnimation(0, 500, 400);
   }, []);
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Select Difficulty</Text>
-      <Animated.View style={{ transform: [{ translateX }] }}>
+      <Animated.View style={[ { transform: [{ translateX: easyAnimation.getAnimation() }] } ]}>
         <Pressable style={styles.buttonContainer} 
           onPressIn={() => {
             const sound = SoundManager.getMainClick();
@@ -43,7 +44,7 @@ export default function DifficultySelector() {
           <Text style={styles.buttonText}>Easy</Text>
         </Pressable>
       </Animated.View>
-      <Animated.View style={{ transform: [{ translateX }] }}>
+      <Animated.View style={[ { transform: [{ translateX: mediumAnimation.getAnimation() }] } ]}>
         <Pressable style={styles.buttonContainer} 
           onPressIn={() => {
             const sound = SoundManager.getMainClick();
@@ -58,7 +59,7 @@ export default function DifficultySelector() {
           <Text style={styles.buttonText}>Medium</Text>
         </Pressable>
       </Animated.View>
-      <Animated.View style={{ transform: [{ translateX }] }}>
+      <Animated.View style={[ { transform: [{ translateX: hardAnimation.getAnimation() }] } ]}>
         <Pressable style={styles.buttonContainer} 
           onPressIn={() => {
             const sound = SoundManager.getMainClick();
