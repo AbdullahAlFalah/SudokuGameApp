@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import React, { useContext, useEffect, useRef } from 'react';
+import { View, Text, Pressable, StyleSheet, Animated } from 'react-native';
 
 import { GameContext } from '../context/GameContext';
 import { playSound } from '../utils/SoundPlayer';
@@ -15,48 +15,64 @@ export default function DifficultySelector() {
 
   const { setDifficulty, setIsDifficultySet } = gameContext;
 
+  const translateX = useRef(new Animated.Value(300)).current;
+
+  useEffect(() => {
+    Animated.timing(translateX, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Select Difficulty</Text>
-      <Pressable style={styles.buttonContainer} 
-        onPressIn={() => {
-          const sound = SoundManager.getMainClick();
-          if (sound) {
-            playSound(sound);
-          }
-        }}
-        onPress={() => { setDifficulty('easy'); setIsDifficultySet(true); } }
-        android_disableSound={true}
-        android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}
-        >
-        <Text style={styles.buttonText}>Easy</Text>
-      </Pressable>
-      <Pressable style={styles.buttonContainer} 
-        onPressIn={() => {
-          const sound = SoundManager.getMainClick();
-          if (sound) {
-            playSound(sound);
-          }
-        }}
-        onPress={() => { setDifficulty('medium'); setIsDifficultySet(true); } }
-        android_disableSound={true}
-        android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}
-        >
-        <Text style={styles.buttonText}>Medium</Text>
-      </Pressable>
-      <Pressable style={styles.buttonContainer} 
-        onPressIn={() => {
-          const sound = SoundManager.getMainClick();
-          if (sound) {
-            playSound(sound);
-          }
-        }}
-        onPress={() => { setDifficulty('hard'); setIsDifficultySet(true);} }
-        android_disableSound={true}
-        android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}
-        >
-        <Text style={styles.buttonText}>Hard</Text>
-      </Pressable>
+      <Animated.View style={{ transform: [{ translateX }] }}>
+        <Pressable style={styles.buttonContainer} 
+          onPressIn={() => {
+            const sound = SoundManager.getMainClick();
+            if (sound) {
+              playSound(sound);
+            }
+          }}
+          onPress={() => { setDifficulty('easy'); setIsDifficultySet(true); } }
+          android_disableSound={true}
+          android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}
+          >
+          <Text style={styles.buttonText}>Easy</Text>
+        </Pressable>
+      </Animated.View>
+      <Animated.View style={{ transform: [{ translateX }] }}>
+        <Pressable style={styles.buttonContainer} 
+          onPressIn={() => {
+            const sound = SoundManager.getMainClick();
+            if (sound) {
+              playSound(sound);
+            }
+          }}
+          onPress={() => { setDifficulty('medium'); setIsDifficultySet(true); } }
+          android_disableSound={true}
+          android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}
+          >
+          <Text style={styles.buttonText}>Medium</Text>
+        </Pressable>
+      </Animated.View>
+      <Animated.View style={{ transform: [{ translateX }] }}>
+        <Pressable style={styles.buttonContainer} 
+          onPressIn={() => {
+            const sound = SoundManager.getMainClick();
+            if (sound) {
+              playSound(sound);
+            }
+          }}
+          onPress={() => { setDifficulty('hard'); setIsDifficultySet(true);} }
+          android_disableSound={true}
+          android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}
+          >
+          <Text style={styles.buttonText}>Hard</Text>
+        </Pressable>
+      </Animated.View>
     </View>
   );
 }
