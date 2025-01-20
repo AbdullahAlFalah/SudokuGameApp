@@ -3,13 +3,17 @@ import Sound from 'react-native-sound';
 Sound.setCategory('Playback');
 
 class SoundManager {
+
   private static mainClick: Sound | null = null;
+  private static hintClick: Sound | null = null;
+  private static solveClick: Sound | null = null;
   private static reloadClick: Sound | null = null;
   private static cameraClick: Sound | null = null;
   private static validSolutionClick: Sound | null = null;
   private static invalidSolutionClick: Sound | null = null;
-
+  
   static preloadSounds() {
+
     this.mainClick = new Sound(
       require('../assets/Sounds/MainClick.wav'),
       Sound.MAIN_BUNDLE,
@@ -18,6 +22,30 @@ class SoundManager {
           console.error('Failed to load main click sound:', error);
         } else {
           this.mainClick?.setVolume(1); // Set the volume to maximum
+        }
+      }
+    );
+
+    this.hintClick = new Sound(
+      require('../assets/Sounds/HintClick.wav'),
+      Sound.MAIN_BUNDLE,
+      (error) => {
+        if (error) {
+          console.error('Failed to load hint click sound:', error);
+        } else {
+          this.hintClick?.setVolume(1); // Set the volume to maximum
+        }
+      }
+    );
+
+    this.solveClick = new Sound(
+      require('../assets/Sounds/SolveClick.wav'),
+      Sound.MAIN_BUNDLE,
+      (error) => {
+        if (error) {
+          console.error('Failed to load solve click sound:', error);
+        } else {
+          this.hintClick?.setVolume(1); // Set the volume to maximum
         }
       }
     );
@@ -73,6 +101,8 @@ class SoundManager {
 
   static releaseAll() {
     this.mainClick?.release();
+    this.hintClick?.release();
+    this.solveClick?.release();
     this.reloadClick?.release();
     this.cameraClick?.release();
     this.validSolutionClick?.release();
@@ -81,6 +111,14 @@ class SoundManager {
 
   static getMainClick(): Sound | null {
     return this.mainClick;
+  }
+
+  static getHintClick(): Sound | null {
+    return this.hintClick;
+  }
+
+  static getSolveClick(): Sound | null {
+    return this.solveClick;
   }
 
   static getReloadClick(): Sound | null {

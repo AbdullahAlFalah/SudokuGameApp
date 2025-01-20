@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, StyleSheet, ActivityIndicator, Pressable, Text, ImageBackground } from 'react-native';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import ConfettiCannon from 'react-native-confetti-cannon';
@@ -23,10 +23,12 @@ export default function GameScreen() {
       }
 
     const { isDifficultySet } = gameContext;
-    const { board, fixedCells, updateCell, resetGame, loading, validateBoard, confettiVisible } = useSudokuLogic();
+    const { board, fixedCells, updateCell, autofillNextEmptyCell, autocompleteGrid, resetGame, loading, validateBoard, confettiVisible } = useSudokuLogic();
 
     const {theme, background} = useTheme();
     const Themestyles = getThemeStyles(theme, background);
+
+    const [bulbColor, setBulbColor] = useState('#FFFFFF');
 
     return (
 
@@ -56,6 +58,36 @@ export default function GameScreen() {
 
             {isDifficultySet ? (
                 <View style={styles.container}>
+                    <Pressable style={styles.hintButtoncontainer}
+                        onPressIn={() => {
+                            setBulbColor('#FFD700'); // Change the bulb color to gold when pressed
+                            const sound = SoundManager.getHintClick();
+                            if (sound) {
+                                playSound(sound);
+                            }
+                        }}
+                        onPressOut={() => {
+                            setBulbColor('#FFFFFF'); // Reset the bulb color when released
+                        }}
+                        onPress={autofillNextEmptyCell}
+                        android_disableSound={true}
+                        android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}
+                        >
+                        <SimpleLineIcons name="bulb" size={24} color={bulbColor} />
+                    </Pressable>
+                    <Pressable style={styles.solveButtoncontainer}
+                        onPressIn={() => {
+                            const sound = SoundManager.getSolveClick();
+                            if (sound) {
+                                playSound(sound);
+                            }
+                        }}
+                        onPress={autocompleteGrid}
+                        android_disableSound={true}
+                        android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}
+                        >
+                            <SimpleLineIcons name="magic-wand" size={24} color="#FFFFFF" />
+                        </Pressable>
                     <Timer />
                     <Pressable style={styles.resetButtoncontainer} 
                         onPressIn={() => {
@@ -122,6 +154,32 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
     },
+    hintButtoncontainer: {
+        position: 'absolute',
+        top: 10,
+        left: 10,
+        backgroundColor: '#2e8b57', 
+        padding: 10,
+        borderRadius: 20, // Circular button
+        elevation: 2, // Adds a shadow (Android)
+        shadowColor: '#000', // For iOS shadow
+        zIndex: 1, // Ensure the button appears on top
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    solveButtoncontainer: {
+        position: 'absolute',
+        top: 70,
+        left: 10,
+        backgroundColor: '#2e8b57', 
+        padding: 10,
+        borderRadius: 20, // Circular button
+        elevation: 2, // Adds a shadow (Android)
+        shadowColor: '#000', // For iOS shadow
+        zIndex: 1, // Ensure the button appears on top
+        justifyContent: 'center',
+        alignItems: 'center',
+    },    
     resetButtoncontainer: {
         position: 'absolute',
         top: 10,

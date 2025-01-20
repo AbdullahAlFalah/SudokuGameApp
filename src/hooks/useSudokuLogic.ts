@@ -1,6 +1,5 @@
 import { useContext, useState, useEffect, useRef } from 'react';
 import { Alert } from 'react-native';
-import Sound from 'react-native-sound';
 
 import { GameContext } from '../context/GameContext';
 import { generateSudoku, createPuzzle } from '../utils/generateSudoku';
@@ -20,6 +19,9 @@ export default function useSudokuLogic() {
 
     const { board, setBoard, fixedCells, setFixedCells, difficulty, setDifficulty, setIsDifficultySet } = gamecontext;
     
+    // Complete board state to store the solution
+    const [CompleteBoard, setCompleteBoard] = useState<( number )[][]>([]);
+
     // Loading state to control visibility
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -43,19 +45,19 @@ export default function useSudokuLogic() {
         setLoading(true); // Start loading
         const timeout = setTimeout(() => {
 
-        const completeBoard = generateSudoku(); // Generate a complete board and then create a puzzle based on difficulty
-        const puzzleBoard = createPuzzle(completeBoard, difficulty); // Adjust difficulty here
+          const completeBoard = generateSudoku(); // Generate a complete board and then create a puzzle based on difficulty
+          const puzzleBoard = createPuzzle(completeBoard, difficulty); // Adjust difficulty here
 
-        setBoard(puzzleBoard);
-        setFixedCells( puzzleBoard.map(row => row.map(cell => cell !== 0)) ); //Mark fixed cells
-        setLoading(false); // Stop loading
-        
-
-        // Debugging: Check board and fixedCells initialization
-        console.log('Complete Board Initialized:', completeBoard);
-        console.log('Puzzle Board Initialized:', puzzleBoard);
-        console.log('Fixed Cells Initialized:', puzzleBoard.map(row => row.map(cell => cell !== 0)));
-        console.log('Difficulty:', difficulty);
+          setCompleteBoard(completeBoard); 
+          setBoard(puzzleBoard);
+          setFixedCells( puzzleBoard.map(row => row.map(cell => cell !== 0)) ); //Mark fixed cells
+          setLoading(false); // Stop loading
+          
+          // Debugging: Check board and fixedCells initialization
+          console.log('Complete Board Initialized:', completeBoard);
+          console.log('Puzzle Board Initialized:', puzzleBoard);
+          console.log('Fixed Cells Initialized:', puzzleBoard.map(row => row.map(cell => cell !== 0)));
+          console.log('Difficulty:', difficulty);
 
         }, 500); // Adjust the delay (in milliseconds)
 
@@ -87,6 +89,26 @@ export default function useSudokuLogic() {
       console.log('Updated Board:', newBoard);
   };
 
+  const autofillNextEmptyCell = () => {
+    for (let row = 0; row < board.length; row++) {
+      for (let col = 0; col < board[row].length; col++) {
+        if (board[row][col] === 0) {
+          const newBoard = [...board];
+          newBoard[row][col] = CompleteBoard[row][col];
+          setBoard(newBoard);
+          return;
+        }
+      }
+    }
+  };
+
+  const autocompleteGrid = () => {
+    const newBoard = board.map((row, rowIndex) =>
+      row.map((cell, colIndex) => (cell === 0 ? CompleteBoard[rowIndex][colIndex] : cell))
+    );
+    setBoard(newBoard);
+  };
+
   const resetGame = () => {
     setIsDifficultySet(false); // Clear the difficulty selection
     setDifficulty(''); // Clear the difficulty itself
@@ -104,7 +126,7 @@ export default function useSudokuLogic() {
         setConfettiVisible(true); // Trigger confetti animation
         setTimeout(() => setConfettiVisible(false), 3000); // Stop confetti after 3 seconds
         timer.pause(); // Pause the timer
-        const sound = SoundManager.getCameraClick();
+        const sound = SoundManager.getValidSolutionClick();
         if (sound) {
           playSound(sound); // Play valid solution sound
         } 
@@ -119,7 +141,7 @@ export default function useSudokuLogic() {
 
   };
 
-  return { board, fixedCells, updateCell, resetGame, loading, validateBoard, confettiVisible, elapsedTime };
+  return { board, fixedCells, updateCell, autofillNextEmptyCell, autocompleteGrid, resetGame, loading, validateBoard, confettiVisible, elapsedTime };
 
 };
 
