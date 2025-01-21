@@ -37,7 +37,7 @@ export default function HomeScreen () {
               onPress={() =>  navigation.navigate('Game')}
               android_disableSound={true} // Suppress default Android click sound
               android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}
-              >
+            >
               <Text style={styles.buttonText}>Start Game</Text>
             </Pressable>      
             <Pressable style={styles.buttonContainer} 
@@ -49,8 +49,22 @@ export default function HomeScreen () {
               }}
               onPress={() => navigation.navigate('Theme')}
               android_disableSound={true}
-              android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}>
+              android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}
+            >
               <Text style={styles.buttonText}>Theme</Text>
+            </Pressable>
+            <Pressable style={styles.buttonContainer} 
+              onPressIn={() => {
+                const sound = SoundManager.getMainClick();
+                if (sound) {
+                  playSound(sound);
+                }
+              }}
+              onPress={() => navigation.navigate('Facts')}
+              android_disableSound={true}
+              android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}
+            >
+              <Text style={styles.buttonText}>Fact Of The Day</Text>
             </Pressable>
             <Pressable style={styles.buttonContainer} 
               onPressIn={() => {
@@ -61,7 +75,8 @@ export default function HomeScreen () {
               }}
               onPress={handleExit}
               android_disableSound={true}
-              android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}>
+              android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}
+            >
               <Text style={styles.buttonText}>Exit</Text>
             </Pressable>
         </ImageBackground>

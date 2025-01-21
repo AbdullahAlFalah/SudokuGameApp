@@ -5,6 +5,7 @@ import GameContextProvider from './context/GameContext';
 import HomeScreen from './screens/HomeScreen';
 import GameScreen from './screens/GameScreen';
 import ThemeScreen from './screens/ThemeScreen';
+import FactsScreen from './screens/FactsScreen';
 import { RootStackParamList } from './navigation/ScreenTypeProps';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ThemeProvider } from './context/ThemeContext';
@@ -38,6 +39,7 @@ function AppNavigator() {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Game" component={GameScreen} />
         <Stack.Screen name="Theme" component={ThemeScreen} />
+        <Stack.Screen name="Facts" component={FactsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
 
