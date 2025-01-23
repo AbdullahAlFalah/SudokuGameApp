@@ -11,7 +11,11 @@ export default function ThemeToggle() {
   const { theme, background, toggleTheme, setBackground } = useTheme();
   const Themestyles = getThemeStyles(theme, background);
 
+  const isDarkTheme = theme === 'Dark';
+  const isLightTheme = theme === 'Light';
+
   return (
+
     <View>
         <Text style={[styles.text, Themestyles.text]}>Current Theme: {theme}</Text>
         <Pressable style={styles.button}
@@ -28,7 +32,7 @@ export default function ThemeToggle() {
           <Text style={styles.buttonText}>Toggle Theme</Text>
         </Pressable>
         <Text style={[styles.text, Themestyles.text]}>Current Background: {background}</Text>
-        <Pressable style={styles.button} 
+        <Pressable style={[styles.button]} 
           onPressIn={() => {
             const sound = SoundManager.getMainClick();
             if (sound) {
@@ -41,7 +45,7 @@ export default function ThemeToggle() {
           >
           <Text style={styles.buttonText}>Default</Text>
         </Pressable>
-        <Pressable style={styles.button} 
+        <Pressable style={[styles.button, isDarkTheme && styles.disabledButton]} 
           onPressIn={() => {
             const sound = SoundManager.getMainClick();
             if (sound) {
@@ -51,10 +55,11 @@ export default function ThemeToggle() {
           onPress={() => setBackground('Light Wood')}
           android_disableSound={true}
           android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}
+          disabled={isDarkTheme}
           >
           <Text style={styles.buttonText}>Light Wood</Text>
         </Pressable>
-        <Pressable style={styles.button} 
+        <Pressable style={[styles.button, isLightTheme && styles.disabledButton]} 
           onPressIn={() => {
             const sound = SoundManager.getMainClick();
             if (sound) {
@@ -64,10 +69,11 @@ export default function ThemeToggle() {
           onPress={() => setBackground('Dark Wood')}
           android_disableSound={true}
           android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}
+          disabled={isLightTheme}
           >
           <Text style={styles.buttonText}>Dark Wood</Text>
         </Pressable>
-        <Pressable style={styles.button} 
+        <Pressable style={[styles.button, isDarkTheme && styles.disabledButton]} 
           onPressIn={() => {
             const sound = SoundManager.getMainClick();
             if (sound) {
@@ -77,10 +83,11 @@ export default function ThemeToggle() {
           onPress={() => setBackground('White Marble')}
           android_disableSound={true}
           android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}
+          disabled={isDarkTheme}
           >
           <Text style={styles.buttonText}>White Marble</Text>
         </Pressable>
-        <Pressable style={styles.button} 
+        <Pressable style={[styles.button, isLightTheme && styles.disabledButton]} 
           onPressIn={() => {
             const sound = SoundManager.getMainClick();
             if (sound) {
@@ -90,10 +97,12 @@ export default function ThemeToggle() {
           onPress={() => setBackground('Black Marble')}
           android_disableSound={true}
           android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}
+          disabled={isLightTheme}
           >
           <Text style={styles.buttonText}>Black Marble</Text>
         </Pressable>
     </View>
+
   );
 }
 
@@ -105,6 +114,12 @@ const styles = StyleSheet.create({
   button: {
     padding: 10,
     backgroundColor: '#2e8b57',
+    marginBottom: 10,
+    alignItems: 'center',
+  },
+  disabledButton: {
+    padding: 10,
+    backgroundColor: '#808080',
     marginBottom: 10,
     alignItems: 'center',
   },
