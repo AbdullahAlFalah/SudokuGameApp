@@ -22,11 +22,13 @@ export default function Grid ( { board, fixedCells, onCellChange } : GridProps) 
             <View key={rowIndex} style={[ styles.row,
               (rowIndex + 1) % 3 === 0 && rowIndex !== 8 && styles.subgridRow, // Bold bottom border for subgrids
               rowIndex === 8 && styles.lastRow, // Skip borderBottom for the last row
+              Themestyles.boarderColor,
             ]}>
               {row.map((cellValue, colIndex) => (
                 <View key={`${rowIndex}-${colIndex}`} style={[styles.cell,
                   (colIndex + 1) % 3 === 0 && colIndex !== 8 && styles.subgridCol, // Bold right border for subgrids
                   colIndex === 8 && styles.lastCol, // Skip borderRight for the last column
+                  Themestyles.boarderColor,
                 ]}>
                   <SudokuCell
                     value={cellValue}
@@ -50,18 +52,18 @@ const styles = StyleSheet.create({
     },
     row: {
       flexDirection: 'row', // Place cells in each row in a single line
-      borderBottomWidth: 1,
-      borderColor: '#deb887', // Default thin row borders
+      borderBottomWidth: 1, // Default thin row borders
+      borderColor: '#deb887', // burlywood for row borders for debugging
     },
     // Apply bold row borders for subgrid boundaries
     subgridRow: {
       borderBottomWidth: 3,
-      borderColor: '#4682b4',
+      borderColor: '#4682b4', // Steel Blue for subgrid boundaries for debugging
     },
     // Apply bold column borders for subgrid boundaries
     subgridCol: {
       borderRightWidth: 3,
-      borderColor: '#4682b4',
+      borderColor: '#4682b4', // Steel Blue for subgrid boundaries for debugging
     },
     lastRow: {
       borderBottomWidth: 0,
@@ -71,8 +73,8 @@ const styles = StyleSheet.create({
       borderRightWidth: 0,
     },
     cell: {
-      borderRightWidth: 1,
-      borderColor: '#deb887', // Default thin column borders
+      borderRightWidth: 1, // Default thin column borders
+      borderColor: '#deb887', // burlywood for column borders for debugging
     },
   });
 

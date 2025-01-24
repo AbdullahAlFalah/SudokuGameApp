@@ -14,6 +14,11 @@ export default function ThemeToggle() {
   const isDarkTheme = theme === 'Dark';
   const isLightTheme = theme === 'Light';
 
+  const handleToggleTheme = () => {
+    toggleTheme();
+    setBackground('Default');
+  };
+
   return (
 
     <View>
@@ -25,7 +30,7 @@ export default function ThemeToggle() {
               playSound(sound);
             }
           }} 
-          onPress={toggleTheme}
+          onPress={handleToggleTheme}
           android_disableSound={true}
           android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}
           >

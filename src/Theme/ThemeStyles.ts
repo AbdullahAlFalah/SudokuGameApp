@@ -16,7 +16,7 @@ export const getThemeStyles = ( theme: 'Light' | 'Dark', background: 'Default' |
       'Default': null,
       'Light Wood': require('../assets/Backgrounds/LightWood.png'),
       'Dark Wood': require('../assets/Backgrounds/DarkWood.png'),
-      'White Marble': require('../assets/Backgrounds/WhiteMarble.png'),
+      'White Marble': require('../assets/Backgrounds/WhiteMarble.jpg'),
       'Black Marble': require('../assets/Backgrounds/BlackMarble.png'),
     };
 
