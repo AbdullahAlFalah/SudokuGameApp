@@ -26,8 +26,8 @@ export const getThemeStyles = ( theme: 'Light' | 'Dark', background: 'Default' |
         background: '#2e8b57', // Sea Green for Light theme
       },
       Dark: {
-        text: '#000000',
-        background: '#696969', // Dim grey for Dark theme
+        text: '#f0f8ff',
+        background: '#000000', // Dim grey for Dark theme
       }, 
     };
 

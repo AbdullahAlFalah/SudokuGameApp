@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import GameContextProvider from './context/GameContext';
 import HomeScreen from './screens/HomeScreen';
@@ -49,14 +49,21 @@ function AppNavigator() {
 
 export default function App() {
 
+  const navigationRef = useNavigationContainerRef(); 
+
   useEffect(() => {
     // Preload sounds when the app initializes
     SoundManager.preloadSounds();
 
     const handleBackPress = () => {
-      SoundManager.releaseAll(); // Release all sounds before exiting
-      BackHandler.exitApp();
-      return true;
+      if (navigationRef.isReady() && navigationRef.canGoBack()) {
+        navigationRef.goBack();
+        return true;
+      } else if (navigationRef.isReady() && !navigationRef.canGoBack()) {
+        SoundManager.releaseAll(); // Release all sounds before exiting;
+        return false; // Allow default back behavior (exit app)
+      }
+      return false;
     };
 
     BackHandler.addEventListener('hardwareBackPress', handleBackPress);
@@ -65,7 +72,8 @@ export default function App() {
       BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
       SoundManager.releaseAll();
     };
-  }, []);
+
+  }, [navigationRef]);
 
     return (
 
