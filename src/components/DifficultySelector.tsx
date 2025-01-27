@@ -5,10 +5,15 @@ import { GameContext } from '../context/GameContext';
 import { playSound } from '../utils/SoundPlayer';
 import SoundManager from '../utils/SoundManager';
 import SlideInAnimation from '../animations/SlideIn';
+import { useTheme } from '../context/ThemeContext';
+import { getThemeStyles } from '../Theme/ThemeStyles';
 
 export default function DifficultySelector() {
   
   const gameContext = useContext(GameContext);
+
+  const {theme, background} = useTheme();
+  const Themestyles = getThemeStyles(theme, background);
 
   if (!gameContext) {
     throw new Error('DifficultySelector must be used within a GameContextProvider');
@@ -28,7 +33,7 @@ export default function DifficultySelector() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Select Difficulty</Text>
+      <Text style={[styles.title, Themestyles.text]}>Select Difficulty</Text>
       <Animated.View style={[ { transform: [{ translateX: easyAnimation.getAnimation() }] } ]}>
         <Pressable style={styles.buttonContainer} 
           onPressIn={() => {
@@ -88,6 +93,7 @@ const styles = StyleSheet.create({
       fontSize: 36,
       fontWeight: 'bold',
       marginBottom: 20,
+      fontFamily: '', // Later on, add a custom font here
     },
     buttonContainer: {
       marginBottom: 15,

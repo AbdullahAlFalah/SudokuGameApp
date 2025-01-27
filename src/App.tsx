@@ -13,6 +13,7 @@ import { useTheme } from './context/ThemeContext';
 import { getThemeStyles } from './Theme/ThemeStyles';
 import { BackHandler } from 'react-native';
 import SoundManager from './utils/SoundManager';
+import KeepAwake from 'react-native-keep-awake';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -78,14 +79,15 @@ export default function App() {
     return (
 
       <GestureHandlerRootView>
-        <GameContextProvider>
-          <ThemeProvider>
+        <ThemeProvider>
+          <GameContextProvider>
+            <KeepAwake />
             <AppNavigator />
-          </ThemeProvider>  
-        </GameContextProvider>
+          </GameContextProvider>
+        </ThemeProvider>
       </GestureHandlerRootView>
 
-      );
+    );
 
 };
 
