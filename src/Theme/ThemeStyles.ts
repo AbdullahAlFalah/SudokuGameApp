@@ -22,12 +22,12 @@ export const getThemeStyles = ( theme: 'Light' | 'Dark', background: 'Default' |
 
     const headerColors = {
       Light: {
-        text: '#f0f8ff',
+        text: '#f0f8ff', // White for both themes
         background: '#2e8b57', // Sea Green for Light theme
       },
       Dark: {
-        text: '#f0f8ff',
-        background: '#000000', // Dim grey for Dark theme
+        text: '#f0f8ff', // White for both themes
+        background: '#000000', // Black for Dark theme
       }, 
     };
 
