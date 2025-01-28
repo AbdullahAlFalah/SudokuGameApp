@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 
+import { FACT_API_URL} from '@env';
+
 const useFetchFact = () => {
 
   const [fact, setFact] = useState<string | null>(null);
@@ -10,7 +12,7 @@ const useFetchFact = () => {
 
     const fetchFact = async () => {
 
-        const url = `https://uselessfacts.jsph.pl/api/v2/facts/today`;
+        const url = FACT_API_URL; // public API endpoint
 
         try {
 

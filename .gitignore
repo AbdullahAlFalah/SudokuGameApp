@@ -4,6 +4,8 @@
 
 # Windows
 .env
+
+# Images
 .png
 .jpg
 
