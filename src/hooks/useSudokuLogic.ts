@@ -93,8 +93,9 @@ export default function useSudokuLogic() {
     for (let row = 0; row < board.length; row++) {
       for (let col = 0; col < board[row].length; col++) {
         if (board[row][col] === 0) {
-          const newBoard = [...board];
-          newBoard[row][col] = CompleteBoard[row][col];
+          const newBoard = board.map((rowArray, rowIndex) =>
+            rowArray.map((cell, colIndex) => (rowIndex === row && colIndex === col ? CompleteBoard[row][col] : cell))
+          );
           setBoard(newBoard);
           return;
         }
