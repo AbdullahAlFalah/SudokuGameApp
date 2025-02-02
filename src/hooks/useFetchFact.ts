@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { FACT_API_URL} from '@env';
+import { FACT_API_URL } from '@env';
 
 const useFetchFact = () => {
 

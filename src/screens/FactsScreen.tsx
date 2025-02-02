@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ImageBackground, View, Text, StyleSheet, ActivityIndicator, Pressable } from "react-native";
 
 import { useNavigation } from '@react-navigation/native';
@@ -21,6 +21,25 @@ export default function FactsScreen () {
 
     const { fact, loading, error } = useFetchFact();
 
+    const [displayedText, setDisplayedText] = useState("");
+
+    useEffect(() => {
+      if (fact) {
+        let currentIndex = 0;
+        const intervalId = setInterval(() => {
+          setDisplayedText((prev) => {
+            const nextChar = fact[currentIndex];
+            currentIndex++;        
+            if (currentIndex === fact.length) {
+              clearInterval(intervalId);
+            }
+            return prev + nextChar;
+          });
+        }, 50); // Adjust typing speed here
+        return () => clearInterval(intervalId);
+      }
+    }, [fact]);
+
     return (
 
         <ImageBackground
@@ -34,7 +53,7 @@ export default function FactsScreen () {
                 ) : error ? (
                     <Text style={[styles.factText, Themestyles.text]}>{error}</Text>
                 ) : (
-                    <Text style={[styles.factText, Themestyles.text]}>{fact}</Text>
+                    <Text style={[styles.factText, Themestyles.text]}>{displayedText}</Text>
                 )
                 }
             </View>
@@ -67,6 +86,12 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
         position: 'absolute',
         top: 100,
+        borderRadius: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.5,
+        shadowRadius: 3,
+        elevation: 3,
     },
     factText: {
         fontSize: 20,
