@@ -47,7 +47,7 @@ export default function FactsScreen () {
           style={[styles.container, Themestyles.container]}
           resizeMode='cover' // Enable this to stretch the background image to fill the screen
           >
-            <View style={styles.factcontentBox}>
+            <View style={[styles.factcontentBox, Themestyles.shadowColor]}>
                 {loading ? (
                     <ActivityIndicator size='large' color='#0000ff' />
                 ) : error ? (
@@ -87,7 +87,6 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 100,
         borderRadius: 5,
-        shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.5,
         shadowRadius: 3,

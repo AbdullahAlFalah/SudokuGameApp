@@ -39,6 +39,15 @@ export const getThemeStyles = ( theme: 'Light' | 'Dark', background: 'Default' |
         borderColor: '#f0f8ff'
       },
     };
+
+    const shadowColors = {
+      Light: {
+        shadowColor: '#000000',
+      },
+      Dark: {
+        shadowColor: '#f0f8ff',
+      },
+    }
   
     return {
 
@@ -56,6 +65,10 @@ export const getThemeStyles = ( theme: 'Light' | 'Dark', background: 'Default' |
       boarderColor: {
         borderColor: boarderColors[theme].borderColor,
       },
+      shadowColor: {
+        shadowColor: shadowColors[theme].shadowColor,
+      },
+
     };
 
 };
