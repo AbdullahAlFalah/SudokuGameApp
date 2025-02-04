@@ -40,6 +40,8 @@ export default function FactsScreen () {
       }
     }, [fact]);
 
+    const combinedFactBoxStyle = StyleSheet.flatten([styles.factcontentBox, Themestyles.shadowColor]); // Combined styling for the fact box
+
     return (
 
         <ImageBackground
@@ -47,7 +49,7 @@ export default function FactsScreen () {
           style={[styles.container, Themestyles.container]}
           resizeMode='cover' // Enable this to stretch the background image to fill the screen
           >
-            <View style={[styles.factcontentBox, Themestyles.shadowColor]}>
+            <View style={combinedFactBoxStyle}>
                 {loading ? (
                     <ActivityIndicator size='large' color='#0000ff' />
                 ) : error ? (
