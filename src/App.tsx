@@ -11,10 +11,9 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ThemeProvider } from './context/ThemeContext';
 import { useTheme } from './context/ThemeContext';
 import { getThemeStyles } from './Theme/ThemeStyles';
-import { Alert, BackHandler } from 'react-native';
+import { BackHandler } from 'react-native';
 import SoundManager from './utils/SoundManager';
 import KeepAwake from 'react-native-keep-awake';
-import { configureNotificationHandler, requestNotificationPermissions, scheduleAppNotification } from './services/NotifyService';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -53,25 +52,7 @@ export default function App() {
 
   const navigationRef = useNavigationContainerRef(); 
 
-  const initializeNotifications = async () => {
-    
-    try {
-      configureNotificationHandler(); // Configure notification handler
-      const permissionGranted = await requestNotificationPermissions(); // Request notification permissions
-      if (permissionGranted) {
-        await scheduleAppNotification(); // Schedule the app notification
-      } else {
-        Alert.alert('Notification Permission Required', 'Permission for notifications not granted!');
-      }
-    } catch (error) {
-      console.log('Error initializing notifications: ', error);
-    }
-    
-  };
-
   useEffect(() => {
-
-    initializeNotifications(); // Initialize notifications when the app initializes
 
     SoundManager.preloadSounds(); // Preload sounds when the app initializes
 

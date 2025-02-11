@@ -5,8 +5,10 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"
@@ -30,6 +32,16 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
       </activity>
+
+      <service 
+        android:name="app.notifee.background.BackgroundService" 
+        android:permission="android.permission.BIND_JOB_SERVICE" />
+
+      <receiver android:name="app.notifee.background.BackgroundReceiver" android:exported="true">
+        <intent-filter>
+            <action android:name="app.notifee.background.RECEIVE_EVENT" />
+        </intent-filter>
+      </receiver>
 
     </application>
     

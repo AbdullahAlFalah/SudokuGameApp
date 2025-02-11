@@ -1,39 +1,48 @@
-import * as Notifications from 'expo-notifications';
+import notifee, { TriggerType } from '@notifee/react-native';
 
-export const configureNotificationHandler = () => {
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: false, // Suppress notifications when the app is open
-      shouldPlaySound: true,
-      shouldSetBadge: false,
-    }),
-  });
-};
+export async function scheduleNotification( minutes = 1 ) {
 
-// Request permission for notifications
-export const requestNotificationPermissions = async () => {
-  const { status } = await Notifications.requestPermissionsAsync();
-  if (status !== 'granted') {
-    alert('Permission for notifications not granted!');
-    return false;
-  } else {
-    return true;
+  try {
+
+    // Ensure the channel is created (required for Android)
+    await notifee.createChannel({
+      id: 'default',
+      name: 'Background Notification Channel',
+    });
+
+    // Set trigger time for the notification
+    const triggerDate = new Date(Date.now());
+    triggerDate.setMinutes(triggerDate.getMinutes() + minutes);
+
+    const trigger = {
+      type: TriggerType.TIMESTAMP,
+      timestamp: triggerDate.getTime(),
+    };
+
+    // Schedule the notification
+    await notifee.createTriggerNotification(
+      {
+        title: 'Periodic Notification',
+        body: `Reminder ${triggerDate.toLocaleTimeString()}.`,
+        android: {
+          channelId: 'default',
+          smallIcon: 'ic_launcher',
+          pressAction: {
+            id: 'default',
+            launchActivity: 'default',
+          },
+        },
+      },
+      trigger
+    );
+
+    console.log('Notification scheduled at:', triggerDate);
+
+  } catch (error) {
+
+    console.error('Failed to schedule notification:', error);
+
   }
-};
 
-// Schedule a notification
-export const scheduleAppNotification = async () => {
-  await Notifications.cancelAllScheduledNotificationsAsync(); // Clear existing notifications
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title: "Reminder",
-      body: "Time to tease your mind with a puzzle!",
-      sound: true,
-    },
-    trigger: {
-      seconds: 60, // Repeat every 60 seconds
-      repeats: true,
-    },
-  });
-};
+}
 
