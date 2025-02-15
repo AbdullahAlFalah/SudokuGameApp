@@ -1,6 +1,7 @@
-import notifee, { TriggerType } from '@notifee/react-native';
 
-export async function scheduleNotification( minutes = 1 ) {
+import notifee, { RepeatFrequency, TriggerType } from '@notifee/react-native';
+
+export async function scheduleNotification( minutes = 1) {
 
   try {
 
@@ -17,7 +18,28 @@ export async function scheduleNotification( minutes = 1 ) {
     const trigger = {
       type: TriggerType.TIMESTAMP,
       timestamp: triggerDate.getTime(),
+      // repeatFrequency: RepeatFrequency.DAILY, // Repeat once a day
     };
+
+    const actions = [
+
+      {
+        // Button to open the app from notification
+        title: 'Open', 
+        pressAction: {
+          id: 'open',
+          launchActivity: 'default', // Opens the app when tapped
+        },
+      },
+      {
+        // Button to dismiss notification
+        title: 'Dismiss', 
+        pressAction: {
+          id: 'dismiss',
+        },
+      }, 
+                
+    ]
 
     // Schedule the notification
     await notifee.createTriggerNotification(
@@ -27,10 +49,7 @@ export async function scheduleNotification( minutes = 1 ) {
         android: {
           channelId: 'default',
           smallIcon: 'ic_launcher',
-          pressAction: {
-            id: 'default',
-            launchActivity: 'default',
-          },
+          actions: actions,                     
         },
       },
       trigger

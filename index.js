@@ -8,40 +8,77 @@ import {name as appName} from './app.json';
 import notifee, { EventType } from '@notifee/react-native';
 import { scheduleNotification } from './src/services/NotifyService';
 
-// Handle app state changes
-function handleAppStateChange(nextAppState) {
+const currentAppState = {
+  state: AppState.currentState,
+  setState(newState) {
+    this.state = newState;
+  },
+};
 
-  if (nextAppState === 'background') {
-    console.log('App is in the background, scheduling periodic notifications...');
-    scheduleNotification(1); // Schedule 1 minute in the future
+// Handle app state changes
+async function handleAppStateChange(nextAppState) {
+
+  if (currentAppState.state === nextAppState) {
+    return; // Prevent unnecessary state changes
+  }
+
+  currentAppState.setState(nextAppState);
+
+  if (nextAppState === 'background') {      
+    await scheduleNotification(1); // Schedule 1 minute in the future
+    console.log('App is in the background, scheduling background notifications!!!');
+  } else if (nextAppState === 'active') {
+    await notifee.cancelTriggerNotifications();
+    await notifee.cancelDisplayedNotifications();
+    console.log('App is in the foreground, canceling all background notifications!!!');    
   }
 
 }
 
+// Set the foreground event handler
+notifee.onForegroundEvent(async ({ type, detail }) => {
+
+  const { notification, pressAction } = detail;
+
+  
+
+});
+
 // Set the background event handler
 notifee.onBackgroundEvent(async ({ type, detail }) => {
-
+     
     const { notification, pressAction } = detail;
 
     // Check the type of event that was received
-    if (type === EventType.ACTION_PRESS && pressAction.id === 'default') {
-      // Handle the action press
-      console.log('Notification action pressed!!!');
-      // Open the app
-      await notifee.openNotification(notification.id);
-      // Remove the notification
-      await notifee.cancelDisplayedNotification(notification.id);
+    if (type === EventType.ACTION_PRESS) { 
+
+      // Handle the action press:
+      if (pressAction.id === 'open') {            
+        // Open the app       
+        console.log('Opening app from notification...');
+      } else if (pressAction.id === 'dismiss') {
+        await notifee.cancelDisplayedNotification(notification.id);
+        console.log('Dismiss button pressed in background. Cancelling notification.');
+      }
+
     }
 
     // Notification Delivered
     if (type === EventType.DELIVERED) {
-      console.log('Notification delivered:', notification);
-      scheduleNotification(1); // Schedule the next one
+
+      console.log('Notification delivered in background:', notification);
+      if (currentAppState.state === 'background') {        
+        scheduleNotification(1); // Schedule the next one
+      } else {
+        // Cancel the notification if the app is in the foreground
+        await notifee.cancelTriggerNotification(notification.id);
+      }
+                     
     }
 
     // Trigger Notification
     if (type === EventType.TRIGGER_NOTIFICATION_CREATED) {
-      console.log('Re-triggering notification...');     
+      console.log('Re-triggering notification...');
     }
 
 });
