@@ -1,6 +1,7 @@
 
 import notifee, { RepeatFrequency, TriggerType } from '@notifee/react-native';
 
+
 export async function scheduleNotification( minutes = 1) {
 
   try {
@@ -9,6 +10,9 @@ export async function scheduleNotification( minutes = 1) {
     await notifee.createChannel({
       id: 'default',
       name: 'Background Notification Channel',
+      sound: 'notification_sound',
+      vibration: true,
+      bypassDnd: true,      
     });
 
     // Set trigger time for the notification
@@ -18,7 +22,7 @@ export async function scheduleNotification( minutes = 1) {
     const trigger = {
       type: TriggerType.TIMESTAMP,
       timestamp: triggerDate.getTime(),
-      // repeatFrequency: RepeatFrequency.DAILY, // Repeat once a day
+      // repeatFrequency: RepeatFrequency.DAILY, // Repeat once a day but this needs additional changes with the code
     };
 
     const actions = [
@@ -45,11 +49,15 @@ export async function scheduleNotification( minutes = 1) {
     await notifee.createTriggerNotification(
       {
         title: 'Periodic Notification',
-        body: `Reminder ${triggerDate.toLocaleTimeString()}.`,
+        body: `Daily Reminder ${triggerDate.toLocaleTimeString()}.`,
         android: {
           channelId: 'default',
-          smallIcon: 'ic_launcher',
-          actions: actions,                     
+          smallIcon: 'ic_sudoku_32x32',
+          color: '#9c27b0',
+          largeIcon: 'ic_sudoku_64x64', 
+          circularLargeIcon: true,                         
+          actions: actions,  
+          autoCancel: false,                            
         },
       },
       trigger

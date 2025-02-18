@@ -68,7 +68,7 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
 
       console.log('Notification delivered in background:', notification);
       if (currentAppState.state === 'background') {        
-        scheduleNotification(1); // Schedule the next one
+        await scheduleNotification(1); // Schedule the next one
       } else {
         // Cancel the notification if the app is in the foreground
         await notifee.cancelTriggerNotification(notification.id);
