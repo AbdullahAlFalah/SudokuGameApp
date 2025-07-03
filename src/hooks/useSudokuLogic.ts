@@ -34,7 +34,12 @@ export default function useSudokuLogic() {
         createTimer((currentTime) => setElapsedTime(currentTime))
     ).current;
 
+    // Validation state to control validation
+    const [shouldValidate, setShouldValidate] = useState<boolean>(false);
+
     useEffect(() => {
+
+      let timeout: NodeJS.Timeout; // Declare timeout variable
 
       // Only generate the puzzle if the difficulty is set to a valid value
       if (difficulty) {
@@ -43,6 +48,7 @@ export default function useSudokuLogic() {
         timer.start(); // Start the timer automatically
 
         setLoading(true); // Start loading
+
         const timeout = setTimeout(() => {
 
           const completeBoard = generateSudoku(); // Generate a complete board and then create a puzzle based on difficulty
@@ -61,17 +67,33 @@ export default function useSudokuLogic() {
 
         }, 500); // Adjust the delay (in milliseconds)
 
-        return () => {
-          clearTimeout(timeout); // Cleanup timeout
-        };
-
-      };
+      } else {
+        timer.pause(); // Pause the timer if difficulty is cleared
+      }
 
       return () => {
-        timer.pause(); // Stop the timer if difficulty is cleared
+        if (timeout) clearTimeout(timeout); // Clear the timeout if the component unmounts
       };
 
     }, [difficulty, setBoard, setFixedCells]);
+
+    useEffect(() => {
+      
+      if (!shouldValidate) return; // Skip validation if shouldValidate is false
+
+      if (isBoardFull) {
+        validateBoard();
+      } else {
+        console.log('Board not full — skipping validation.');
+      } 
+
+      setShouldValidate(false); // Reset validation state after checking
+
+    }, [board, shouldValidate]); // Triggered by board update or shouldValidate state change (flag)
+
+
+    // Helper const to check if the board is full
+    const isBoardFull = board.every(row => row.every(cell => cell !== 0));
 
     // Update a cell only if it's not fixed
     const updateCell = (row: number, col: number, value: number) => {
@@ -84,9 +106,10 @@ export default function useSudokuLogic() {
       ); 
       
       setBoard(newBoard); // Update board in the context
-
+      setShouldValidate(true); // Set validation state to true
       // Debugging: Check the updated board state
       console.log('Updated Board:', newBoard);
+
   };
 
   const autofillNextEmptyCell = () => {
@@ -97,6 +120,7 @@ export default function useSudokuLogic() {
             rowArray.map((cell, colIndex) => (rowIndex === row && colIndex === col ? CompleteBoard[row][col] : cell))
           );
           setBoard(newBoard);
+          setShouldValidate(true); // Set validation state to true
           return;
         }
       }
@@ -108,6 +132,7 @@ export default function useSudokuLogic() {
       row.map((cell, colIndex) => (cell === 0 ? CompleteBoard[rowIndex][colIndex] : cell))
     );
     setBoard(newBoard);
+    setShouldValidate(true); // Set validation state to true   
   };
 
   const resetGame = () => {
