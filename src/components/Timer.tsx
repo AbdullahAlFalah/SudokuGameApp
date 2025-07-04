@@ -1,30 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import createTimer from '../utils/Timer';
 import useSudokuLogic from '../hooks/useSudokuLogic';
 
 export default function Timer () {
 
-    const { loading } = useSudokuLogic();
-    const [time, setTime] = useState(0);
-
-    // Create the timer instance
-    const timer = useRef(createTimer((currentTime) => setTime(currentTime))).current;
-
-    useEffect(() => {
-
-        if (!loading) {
-            timer.reset(); // Reset the timer whenever a new game starts
-            timer.start(); // Automatically start the timer
-        } else {
-            timer.pause(); // Pause the timer while loading
-        }
-
-        return () => {
-            timer.pause(); // Pause the timer when the component unmounts
-        };
-
-    }, [loading]); // Dependency on loading to trigger timer control
+    const { loading, elapsedTime } = useSudokuLogic();
 
         // Format time as MM:SS
         const formatTime = (totalSeconds: number): string => {
@@ -35,7 +15,7 @@ export default function Timer () {
 
     return (
         <View style={styles.Timercontainer}>
-            <Text style={styles.timerText}>{formatTime(time)}</Text>
+            <Text style={styles.timerText}>{formatTime(elapsedTime)}</Text>
         </View>
     );
 

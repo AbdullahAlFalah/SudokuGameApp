@@ -37,16 +37,16 @@ export default function useSudokuLogic() {
     // Validation state to control validation
     const [shouldValidate, setShouldValidate] = useState<boolean>(false);
 
+    // Game finished state to control game completion
+    const [gameFinished, setGameFinished] = useState<boolean>(false);
+
     useEffect(() => {
 
       let timeout: NodeJS.Timeout; // Declare timeout variable
 
       // Only generate the puzzle if the difficulty is set to a valid value
       if (difficulty) {
-
-        timer.reset(); // Reset the timer  
-        timer.start(); // Start the timer automatically
-
+             
         setLoading(true); // Start loading
 
         const timeout = setTimeout(() => {
@@ -59,6 +59,8 @@ export default function useSudokuLogic() {
           setFixedCells( puzzleBoard.map(row => row.map(cell => cell !== 0)) ); //Mark fixed cells
           setLoading(false); // Stop loading
           
+          timer.start(); // Start the timer ONCE per new game
+                    
           // Debugging: Check board and fixedCells initialization
           console.log('Complete Board Initialized:', completeBoard);
           console.log('Puzzle Board Initialized:', puzzleBoard);
@@ -67,9 +69,7 @@ export default function useSudokuLogic() {
 
         }, 500); // Adjust the delay (in milliseconds)
 
-      } else {
-        timer.pause(); // Pause the timer if difficulty is cleared
-      }
+      } 
 
       return () => {
         if (timeout) clearTimeout(timeout); // Clear the timeout if the component unmounts
@@ -77,12 +77,22 @@ export default function useSudokuLogic() {
 
     }, [difficulty, setBoard, setFixedCells]);
 
+    // useEffect to pause the timer based on game state
+    useEffect(() => {
+      console.log('TIMER EFFECT:', { gameFinished });
+      if (gameFinished) {
+        timer.pause(); // Pause the timer when the game is finished
+      } 
+    }, [gameFinished]);
+
     useEffect(() => {
       
       if (!shouldValidate) return; // Skip validation if shouldValidate is false
 
       if (isBoardFull) {
+        console.log('Board is full — validating...');
         validateBoard();
+        setShouldValidate(false); // Reset validation state after checking
       } else {
         console.log('Board not full — skipping validation.');
       } 
@@ -95,8 +105,9 @@ export default function useSudokuLogic() {
     // Helper const to check if the board is full
     const isBoardFull = board.every(row => row.every(cell => cell !== 0));
 
-    // Update a cell only if it's not fixed
+    // Update a cell only if it's not fixed and game is not finished
     const updateCell = (row: number, col: number, value: number) => {
+      if (gameFinished) return; // Prevents updating cells if the game is already finished
       if (fixedCells[row][col]) {
         Alert.alert("Can't change a fixed cell!");
         return;
@@ -106,13 +117,15 @@ export default function useSudokuLogic() {
       ); 
       
       setBoard(newBoard); // Update board in the context
-      setShouldValidate(true); // Set validation state to true
+      // Delay setting shouldValidate to next tick, ensuring board is updated
+      setTimeout(() => setShouldValidate(true), 0); // Set validation state to true
       // Debugging: Check the updated board state
       console.log('Updated Board:', newBoard);
 
   };
 
   const autofillNextEmptyCell = () => {
+    if (gameFinished) return; // Prevents autofilling next empty cell if the game is already finished
     for (let row = 0; row < board.length; row++) {
       for (let col = 0; col < board[row].length; col++) {
         if (board[row][col] === 0) {
@@ -120,7 +133,8 @@ export default function useSudokuLogic() {
             rowArray.map((cell, colIndex) => (rowIndex === row && colIndex === col ? CompleteBoard[row][col] : cell))
           );
           setBoard(newBoard);
-          setShouldValidate(true); // Set validation state to true
+          // Delay setting shouldValidate to next tick, ensuring board is updated
+          setTimeout(() => setShouldValidate(true), 0); // Set validation state to true
           return;
         }
       }
@@ -128,11 +142,13 @@ export default function useSudokuLogic() {
   };
 
   const autocompleteGrid = () => {
+    if (gameFinished) return; // Prevents autocompleting the grid if the game is already finished
     const newBoard = board.map((row, rowIndex) =>
       row.map((cell, colIndex) => (cell === 0 ? CompleteBoard[rowIndex][colIndex] : cell))
     );
     setBoard(newBoard);
-    setShouldValidate(true); // Set validation state to true   
+    // Delay setting shouldValidate to next tick, ensuring board is updated
+    setTimeout(() => setShouldValidate(true), 0); // Set validation state to true    
   };
 
   const resetGame = () => {
@@ -140,7 +156,7 @@ export default function useSudokuLogic() {
     setDifficulty(''); // Clear the difficulty itself
     setBoard([]); // Reset the board
     setFixedCells([]); // Clear fixed cells
-    
+    setGameFinished(false); // Reset game finished state
     timer.reset(); // Reset the timer
   };
 
@@ -151,17 +167,13 @@ export default function useSudokuLogic() {
     if (isValidSudoku(board)) {
         setConfettiVisible(true); // Trigger confetti animation
         setTimeout(() => setConfettiVisible(false), 3000); // Stop confetti after 3 seconds
-        timer.pause(); // Pause the timer
+        setGameFinished(true); // Mark game as finished
         const sound = SoundManager.getValidSolutionClick();
-        if (sound) {
-          playSound(sound); // Play valid solution sound
-        } 
+        if (sound) playSound(sound); // Play valid solution sound         
         Alert.alert('Congratulations!', 'The Sudoku puzzle is solved correctly!', [{ text: 'OK' }]);
     } else {
       const sound = SoundManager.getInvalidSolutionClick();
-      if (sound) {
-        playSound(sound); // Play invalid solution sound
-      } 
+      if (sound) playSound(sound); // Play invalid solution sound      
       Alert.alert('Not There Yet!', 'The puzzle is incorrect or incomplete.', [{ text: 'Try Again' }]);
     }
 

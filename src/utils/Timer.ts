@@ -14,8 +14,10 @@ export default function createTimer(callback: (time: number) => void): TimerRetu
 
     const start = () => {
         if (intervalId) return; // Prevent multiple intervals
+        console.log('TIMER STARTED');
         intervalId = setInterval(() => {
             currentTime += 1;
+            console.log('TIMER: TICK', currentTime);
             callback(currentTime);
         }, 1000); // Update every second
     };
@@ -24,6 +26,7 @@ export default function createTimer(callback: (time: number) => void): TimerRetu
         if (intervalId) {
             clearInterval(intervalId);
             intervalId = null;
+            console.log('TIMER PAUSED');
         }
     };
 
@@ -31,6 +34,7 @@ export default function createTimer(callback: (time: number) => void): TimerRetu
         pause();
         currentTime = 0;
         callback(currentTime); // Reset to 0
+        console.log('TIMER RESET');
     };
 
     const getTime = () => currentTime;
