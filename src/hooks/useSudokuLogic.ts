@@ -1,10 +1,9 @@
-import { useContext, useState, useEffect, useRef } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 
 import { GameContext } from '../context/GameContext';
 import { generateSudoku, createPuzzle } from '../utils/generateSudoku';
 import isValidSudoku from '../utils/ValidateSudoku';
-import createTimer from '../utils/Timer';
 import { playSound } from '../utils/SoundPlayer';
 import SoundManager from '../utils/SoundManager';
 
@@ -27,13 +26,7 @@ export default function useSudokuLogic() {
 
     // Confetti visibility state to control visibility
     const [confettiVisible, setConfettiVisible] = useState(false);
-
-    // Timer integration
-    const [elapsedTime, setElapsedTime] = useState<number>(0);
-    const timer = useRef(
-        createTimer((currentTime) => setElapsedTime(currentTime))
-    ).current;
-
+  
     // Validation state to control validation
     const [shouldValidate, setShouldValidate] = useState<boolean>(false);
 
@@ -57,9 +50,7 @@ export default function useSudokuLogic() {
           setCompleteBoard(completeBoard); 
           setBoard(puzzleBoard);
           setFixedCells( puzzleBoard.map(row => row.map(cell => cell !== 0)) ); //Mark fixed cells
-          setLoading(false); // Stop loading
-          
-          timer.start(); // Start the timer ONCE per new game
+          setLoading(false); // Stop loading        
                     
           // Debugging: Check board and fixedCells initialization
           console.log('Complete Board Initialized:', completeBoard);
@@ -76,14 +67,6 @@ export default function useSudokuLogic() {
       };
 
     }, [difficulty, setBoard, setFixedCells]);
-
-    // useEffect to pause the timer based on game state
-    useEffect(() => {
-      console.log('TIMER EFFECT:', { gameFinished });
-      if (gameFinished) {
-        timer.pause(); // Pause the timer when the game is finished
-      } 
-    }, [gameFinished]);
 
     useEffect(() => {
       
@@ -157,7 +140,6 @@ export default function useSudokuLogic() {
     setBoard([]); // Reset the board
     setFixedCells([]); // Clear fixed cells
     setGameFinished(false); // Reset game finished state
-    timer.reset(); // Reset the timer
   };
 
   // Validate the entire Sudoku Board
@@ -179,7 +161,7 @@ export default function useSudokuLogic() {
 
   };
 
-  return { board, fixedCells, updateCell, autofillNextEmptyCell, autocompleteGrid, resetGame, loading, validateBoard, confettiVisible, elapsedTime };
+  return { board, fixedCells, updateCell, autofillNextEmptyCell, autocompleteGrid, resetGame, loading, validateBoard, confettiVisible, gameFinished, setGameFinished };
 
 };
 

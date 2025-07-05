@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import useSudokuLogic from '../hooks/useSudokuLogic';
 
-export default function Timer () {
+interface TimerProps {
+    elapsedTime: number; // Time in seconds
+}
 
-    const { loading, elapsedTime } = useSudokuLogic();
+export default function Timer ({elapsedTime}: TimerProps) {
 
         // Format time as MM:SS
         const formatTime = (totalSeconds: number): string => {

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator, Pressable, Text, ImageBackground } from 'react-native';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import ConfettiCannon from 'react-native-confetti-cannon';
@@ -8,6 +8,7 @@ import useSudokuLogic from '../hooks/useSudokuLogic';
 import { GameContext } from '../context/GameContext';
 import DifficultySelector from '../components/DifficultySelector';
 import { takeScreenshot } from '../utils/Screenshot';
+import useTimer from '../hooks/useTimer';
 import Timer from '../components/Timer';
 import { useTheme } from '../context/ThemeContext';
 import { getThemeStyles } from '../Theme/ThemeStyles';
@@ -23,12 +24,30 @@ export default function GameScreen() {
       }
 
     const { isDifficultySet } = gameContext;
-    const { board, fixedCells, updateCell, autofillNextEmptyCell, autocompleteGrid, resetGame, loading, validateBoard, confettiVisible } = useSudokuLogic();
+    const { board, fixedCells, updateCell, autofillNextEmptyCell, autocompleteGrid, resetGame, loading, validateBoard, confettiVisible, gameFinished } = useSudokuLogic();
+    const { elapsedTime, start, pause, reset: resetTimer } = useTimer();
 
     const {theme, background} = useTheme();
     const Themestyles = getThemeStyles(theme, background);
 
     const [bulbColor, setBulbColor] = useState('#FFFFFF');
+
+    const handleReset = () => {
+        resetGame(); // Reset the game
+        resetTimer(); // Reset the timer
+    };
+
+    useEffect(() => {
+
+        if (isDifficultySet && gameFinished) {
+            pause();
+            console.log('⏸️ Timer PAUSED called — Game finished');
+        } else if (isDifficultySet && !gameFinished) {
+            start();
+            console.log('▶️ Timer START called');
+        } 
+
+    }, [isDifficultySet, gameFinished]);
 
     return (
 
@@ -88,7 +107,7 @@ export default function GameScreen() {
                         >
                             <SimpleLineIcons name="magic-wand" size={24} color="#FFFFFF" />
                         </Pressable>
-                    <Timer />
+                    <Timer elapsedTime={elapsedTime} />
                     <Pressable style={styles.resetButtoncontainer} 
                         onPressIn={() => {
                             const sound = SoundManager.getReloadClick();
@@ -96,7 +115,7 @@ export default function GameScreen() {
                                 playSound(sound);
                             }
                         }}
-                        onPress={resetGame}
+                        onPress={handleReset}
                         android_disableSound={true}
                         android_ripple={{ color: 'rgba(0, 0, 0, 0.2)', borderless: false }}
                         >
