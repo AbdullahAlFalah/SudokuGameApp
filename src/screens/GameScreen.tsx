@@ -33,8 +33,8 @@ export default function GameScreen() {
     const [bulbColor, setBulbColor] = useState('#FFFFFF');
 
     const handleReset = () => {
-        resetGame(); // Reset the game
         resetTimer(); // Reset the timer
+        resetGame(); // Reset the game        
     };
 
     useEffect(() => {
