@@ -24,13 +24,13 @@ async function handleAppStateChange(nextAppState) {
 
   currentAppState.setState(nextAppState);
 
-  if (nextAppState === 'background') {      
-    await scheduleNotification(1); // Schedule 1 minute in the future
+  if (nextAppState === 'background') {
+    await scheduleNotification();
     console.log('App is in the background, scheduling background notifications!!!');
   } else if (nextAppState === 'active') {
     await notifee.cancelTriggerNotifications();
     await notifee.cancelDisplayedNotifications();
-    console.log('App is in the foreground, canceling all background notifications!!!');    
+    console.log('App is in the foreground, canceling all background notifications!!!');
   }
 
 }
@@ -46,39 +46,28 @@ notifee.onForegroundEvent(async ({ type, detail }) => {
 
 // Set the background event handler
 notifee.onBackgroundEvent(async ({ type, detail }) => {
-     
+
     const { notification, pressAction } = detail;
 
     // Check the type of event that was received
-    if (type === EventType.ACTION_PRESS) { 
-
+    if (type === EventType.ACTION_PRESS) {
       // Handle the action press:
-      if (pressAction.id === 'open') {            
-        // Open the app       
+      if (pressAction.id === 'open') {
+        // Open the app
         console.log('Opening app from notification...');
       } else if (pressAction.id === 'dismiss') {
         await notifee.cancelDisplayedNotification(notification.id);
         console.log('Dismiss button pressed in background. Cancelling notification.');
       }
-
     }
 
     // Notification Delivered
     if (type === EventType.DELIVERED) {
-
       console.log('Notification delivered in background:', notification);
-      if (currentAppState.state === 'background') {        
-        await scheduleNotification(1); // Schedule the next one
-      } else {
-        // Cancel the notification if the app is in the foreground
+      // Cancel the notification if the app is in the foreground
+      if (currentAppState.state === 'active' || currentAppState.state !== 'background') {
         await notifee.cancelTriggerNotification(notification.id);
       }
-                     
-    }
-
-    // Trigger Notification
-    if (type === EventType.TRIGGER_NOTIFICATION_CREATED) {
-      console.log('Re-triggering notification...');
     }
 
 });
