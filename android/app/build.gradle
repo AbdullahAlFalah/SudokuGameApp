@@ -117,7 +117,7 @@ android {
     // Disable ABI splits or create a universal APK including all ABIs
     splits {
         abi {
-            enable false
+            enable true
             reset() // clears previous ABIs
             include 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'  // include all you want
             universalApk true  // <-- this creates a fat APK including all ABIs
