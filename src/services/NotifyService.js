@@ -27,7 +27,7 @@ export async function scheduleNotification() {
 
     const trigger = {
       type: TriggerType.TIMESTAMP,
-      timestamp: triggerTime,
+      timestamp: triggerTime.getTime(), // number timestamp
       repeatFrequency: RepeatFrequency.HOURLY, // Repeat once an hour but this needs additional changes with the code
     };
 

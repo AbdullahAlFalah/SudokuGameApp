@@ -15,22 +15,35 @@ const currentAppState = {
   },
 };
 
+let isScheduling = false;
+
 // Handle app state changes
 async function handleAppStateChange(nextAppState) {
-
   if (currentAppState.state === nextAppState) {
     return; // Prevent unnecessary state changes
   }
-
   currentAppState.setState(nextAppState);
 
   if (nextAppState === 'background') {
-    await scheduleNotification();
-    console.log('App is in the background, scheduling background notifications!!!');
+    if (isScheduling) {
+      console.log('Already scheduling, skipping duplicate call to avoid loop');
+      return;
+    }
+    isScheduling = true;
+    try {
+      await scheduleNotification();
+      console.log('App is in the background');
+    } catch (e) {
+      console.log(e);
+    }
+    // Allow scheduling again after delay ( 10 minutes is enough )
+    setTimeout(() => {
+      isScheduling = false;
+    }, 10 * 60 * 1000);
   } else if (nextAppState === 'active') {
     await notifee.cancelTriggerNotifications();
     await notifee.cancelDisplayedNotifications();
-    console.log('App is in the foreground, canceling all background notifications!!!');
+    console.log('App is in the foreground');
   }
 
 }

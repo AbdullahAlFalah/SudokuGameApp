@@ -114,6 +114,15 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+    // Disable ABI splits or create a universal APK including all ABIs
+    splits {
+        abi {
+            enable false
+            reset() // clears previous ABIs
+            include 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'  // include all you want
+            universalApk true  // <-- this creates a fat APK including all ABIs
+        }
+    }
 }
 
 dependencies {
