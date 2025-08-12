@@ -6,7 +6,6 @@ import {AppRegistry, AppState} from 'react-native';
 import App from './src/App';
 import {name as appName} from './app.json';
 import notifee, { EventType } from '@notifee/react-native';
-import { scheduleNotification } from './src/services/NotifyService';
 
 const currentAppState = {
   state: AppState.currentState,
@@ -15,35 +14,18 @@ const currentAppState = {
   },
 };
 
-let isScheduling = false;
-
 // Handle app state changes
 async function handleAppStateChange(nextAppState) {
+
   if (currentAppState.state === nextAppState) {
     return; // Prevent unnecessary state changes
   }
   currentAppState.setState(nextAppState);
 
-  if (nextAppState === 'background') {
-    if (isScheduling) {
-      console.log('Already scheduling, skipping duplicate call to avoid loop');
-      return;
-    }
-    isScheduling = true;
-    try {
-      await scheduleNotification();
-      console.log('App is in the background');
-    } catch (e) {
-      console.log(e);
-    }
-    // Allow scheduling again after delay ( 10 minutes is enough )
-    setTimeout(() => {
-      isScheduling = false;
-    }, 10 * 60 * 1000);
-  } else if (nextAppState === 'active') {
-    await notifee.cancelTriggerNotifications();
-    await notifee.cancelDisplayedNotifications();
+  if (nextAppState === 'active') {
     console.log('App is in the foreground');
+  } else if (nextAppState === 'background') {
+    console.log('App is in the background');
   }
 
 }
@@ -53,7 +35,12 @@ notifee.onForegroundEvent(async ({ type, detail }) => {
 
   const { notification, pressAction } = detail;
 
-  
+  // Notification delivered while the app is on foreground
+  if (type === EventType.DELIVERED) {
+    console.log('Notification delivered in foreground to be cancelled:', notification);
+    // Cancel the notification if the app is in the foreground
+    await notifee.cancelTriggerNotification(notification.id);
+  }
 
 });
 
@@ -74,13 +61,9 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
       }
     }
 
-    // Notification Delivered
+    // Notification delivered while the app is on background
     if (type === EventType.DELIVERED) {
-      console.log('Notification delivered in background:', notification);
-      // Cancel the notification if the app is in the foreground
-      if (currentAppState.state === 'active' || currentAppState.state !== 'background') {
-        await notifee.cancelTriggerNotification(notification.id);
-      }
+      console.log('Notification delivered in background to be kept:', notification);
     }
 
 });
@@ -88,7 +71,7 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
 // Listen for app state changes
 AppState.addEventListener('change', handleAppStateChange);
 
-AppRegistry.registerComponent(appName, () => { 
-    return App
+AppRegistry.registerComponent(appName, () => {
+    return App;
 });
 

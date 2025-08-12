@@ -14,6 +14,8 @@ import { getThemeStyles } from './Theme/ThemeStyles';
 import { BackHandler } from 'react-native';
 import SoundManager from './utils/SoundManager';
 import KeepAwake from 'react-native-keep-awake';
+import notifee from '@notifee/react-native';
+import { scheduleNotification } from './services/NotifyService';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -50,7 +52,7 @@ function AppNavigator() {
 
 export default function App() {
 
-  const navigationRef = useNavigationContainerRef(); 
+  const navigationRef = useNavigationContainerRef();
 
   useEffect(() => {
 
@@ -76,6 +78,18 @@ export default function App() {
 
   }, [navigationRef]);
 
+  // Add this useEffect for scheduling notification after 2 seconds delay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      notifee.cancelDisplayedNotifications();
+      scheduleNotification()
+        .then(() => console.log('Notification scheduled on app start'))
+        .catch(err => console.error('Failed to schedule notification on app start:', err));
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
     return (
 
       <GestureHandlerRootView>
@@ -89,5 +103,5 @@ export default function App() {
 
     );
 
-};
+}
 

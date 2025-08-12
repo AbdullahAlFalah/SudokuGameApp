@@ -18,7 +18,7 @@ export async function scheduleNotification() {
       name: 'Background Notification Channel',
       sound: 'notification_sound',
       vibration: true,
-      bypassDnd: true, 
+      bypassDnd: true,
       importance: AndroidImportance.DEFAULT,
     });
 
@@ -28,14 +28,13 @@ export async function scheduleNotification() {
     const trigger = {
       type: TriggerType.TIMESTAMP,
       timestamp: triggerTime.getTime(), // number timestamp
-      repeatFrequency: RepeatFrequency.HOURLY, // Repeat once an hour but this needs additional changes with the code
+      repeatFrequency: RepeatFrequency.HOURLY, // Repeat once an hour
     };
 
     const actions = [
-
       {
         // Button to open the app from notification
-        title: 'Open', 
+        title: 'Open',
         pressAction: {
           id: 'open',
           launchActivity: 'default', // Opens the app when tapped
@@ -43,27 +42,26 @@ export async function scheduleNotification() {
       },
       {
         // Button to dismiss notification
-        title: 'Dismiss', 
+        title: 'Dismiss',
         pressAction: {
           id: 'dismiss',
         },
-      }, 
-                
-    ]
+      },
+    ];
 
     // Schedule the notification
     await notifee.createTriggerNotification(
       {
         title: 'Periodic Notification',
-        body: `Daily Reminder ${triggerTime.toLocaleTimeString()}.`,
+        body: `Hourly Reminder ${triggerTime.toLocaleTimeString(undefined, {hour12: true, hour: 'numeric', minute: 'numeric'})}.`,
         android: {
           channelId: 'default',
           smallIcon: 'ic_sudoku_32x32',
           color: '#9c27b0',
-          largeIcon: 'ic_sudoku_64x64', 
-          circularLargeIcon: true,                         
-          actions: actions,  
-          autoCancel: false,                            
+          largeIcon: 'ic_sudoku_64x64',
+          circularLargeIcon: true,
+          actions: actions,
+          autoCancel: false,
         },
       },
       trigger
