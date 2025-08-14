@@ -1,4 +1,4 @@
-import notifee, { AndroidImportance, RepeatFrequency, TriggerType } from '@notifee/react-native';
+import notifee, { AndroidImportance, TimeUnit, TriggerType } from '@notifee/react-native';
 import { ensureNotificationPermission } from '../utils/notificationsPermission';
 
 export async function scheduleNotification() {
@@ -32,7 +32,7 @@ export async function scheduleNotification() {
     const trigger = {
       type: TriggerType.INTERVAL,
       interval: 10, // in seconds
-      timeUnit: notifee.TimeUnit.SECONDS, // ensure seconds for testing
+      timeUnit: TimeUnit.SECONDS, // ensure seconds for testing
     };
 
     const actions = [
