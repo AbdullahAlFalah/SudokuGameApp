@@ -23,12 +23,16 @@ export async function scheduleNotification() {
     });
 
     // Set trigger time for the notification
-    const triggerTime = new Date( Date.now() + (3600 * 1000) ); // 1 hour from now
+    // const triggerTime = new Date( Date.now() + (3600 * 1000) ); // 1 hour from now
+    const triggerTime = new Date( Date.now() + (10 * 1000) ); // 10 seconds for testing
 
     const trigger = {
       type: TriggerType.TIMESTAMP,
       timestamp: triggerTime.getTime(), // number timestamp
       repeatFrequency: RepeatFrequency.HOURLY, // Repeat once an hour
+      alarmManager: {
+        allowWhileIdle: true,
+      },
     };
 
     const actions = [
@@ -62,6 +66,7 @@ export async function scheduleNotification() {
           circularLargeIcon: true,
           actions: actions,
           autoCancel: false,
+          asForegroundService: false,
         },
       },
       trigger

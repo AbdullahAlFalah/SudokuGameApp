@@ -16,6 +16,7 @@ import SoundManager from './utils/SoundManager';
 import KeepAwake from 'react-native-keep-awake';
 import notifee from '@notifee/react-native';
 import { scheduleNotification } from './services/NotifyService';
+import checkBackgroundRestrictions from './utils/BatteryModeRequest';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -80,9 +81,10 @@ export default function App() {
 
   // Add this useEffect for scheduling notification after 2 seconds delay
   useEffect(() => {
-    const timer = setTimeout(() => {
-      notifee.cancelDisplayedNotifications();
-      scheduleNotification()
+    const timer = setTimeout(async () => {
+      await notifee.cancelDisplayedNotifications();
+      await checkBackgroundRestrictions();
+      await scheduleNotification()
         .then(() => console.log('Notification scheduled on app start'))
         .catch(err => console.error('Failed to schedule notification on app start:', err));
     }, 2000);

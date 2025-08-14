@@ -1,5 +1,5 @@
 import notifee from '@notifee/react-native';
-import { Platform, PermissionsAndroid, Linking, Alert } from 'react-native';
+import { Platform, Linking, Alert } from 'react-native';
 
 const APP_PACKAGE = 'com.sudokugameapp';
 
@@ -19,77 +19,38 @@ async function openAppSettings() {
     }
 }
 
+/**
+ * Ensures that notification permissions are granted.
+ * Works for both Android and iOS.
+ */
 export async function ensureNotificationPermission(): Promise<boolean> {
-  if (Platform.OS === 'android') {
+    try {
+        // Request permissions using Notifee on both platforms
+        const settings = await notifee.requestPermission();
+        if (
+        (Platform.OS === 'ios' && settings.authorizationStatus < 1) ||
+        (Platform.OS === 'android' && !settings.authorizationStatus)
+        ) {
+            // Permission not granted
+            console.log('Notification permission not granted; user needs to enable it in settings.');
 
-    // Android 13+ (API 33+): runtime POST_NOTIFICATIONS permission is required
-    const sdkVersion = Number(Platform.Version);
-
-    if (sdkVersion >= 33) {
-      const hasPermission = await PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
-      );
-      if (!hasPermission) {
-        const permissionStatus = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
-        );
-        console.log('Notification permission result:', permissionStatus);
-        if (permissionStatus === PermissionsAndroid.RESULTS.GRANTED) {
-            return true; // All good
-        } else if (permissionStatus !== PermissionsAndroid.RESULTS.GRANTED) {
-            console.log('Notification permission not granted on Android; grant them via settings to receive notifications later!');
             return new Promise((resolve) => {
                 Alert.alert(
-                    'Android notification Permission Needed',
-                    'To receive notifications, please enable notification permission in settings.',
-                    [
-                        {
-                        text: 'Cancel',
-                        style: 'cancel',
-                        onPress: () => resolve(false),
-                        },
-                        {
-                        text: 'Open Settings',
-                        onPress: async () => {
-                            await openAppSettings();
-                            resolve(false);
-                        },
-                        },
-                    ],
-                    { cancelable: false }
+                'Notification Permission Needed',
+                'To receive notifications, please enable notification permission in settings.',
+                [
+                    { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
+                    { text: 'Open Settings', onPress: async () => { await openAppSettings(); resolve(false); } },
+                ],
+                { cancelable: false }
                 );
             });
         }
-      }
+        // Permissions granted
+        return true;
+    } catch (err) {
+        console.error('Error while requesting notification permissions:', err);
+        return false;
     }
-  } else {
-    // iOS: Request authorization permission via Notifee
-    const settings = await notifee.requestPermission();
-    if (settings.authorizationStatus < 1) {
-        console.log('iOS notification permission is not granted; grant them via settings to receive notifications later!');
-        return new Promise((resolve) => {
-            Alert.alert(
-                'iOS notification Permission Needed',
-                'To receive notifications, please enable notification permission in settings.',
-                [
-                    {
-                        text: 'Cancel',
-                        style: 'cancel',
-                        onPress: () => resolve(false),
-                    },
-                    {
-                        text: 'Open Settings',
-                        onPress: async () => {
-                            await openAppSettings(); // Force user to app settings, but can't wait for result
-                            resolve(false); // permission NOT currently granted, don't schedule now, wait for next time
-                        },
-                    },
-                ],
-                { cancelable: false }
-            );
-        });
-    }
-  }
-  return true;
 }
 

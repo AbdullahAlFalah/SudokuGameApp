@@ -11,6 +11,7 @@
 
 # Keep all Notifee native classes
 -keep class app.notifee.** { *; }
+-keep interface app.notifee.** { *; }
 
 # Keep React Native bridge classes that Notifee uses
 -keep class com.facebook.react.bridge.** { *; }
