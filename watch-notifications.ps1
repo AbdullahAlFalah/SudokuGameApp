@@ -49,13 +49,20 @@ $job2 = Start-Job -ScriptBlock {
     Select-String "uid $appUid"
 } -ArgumentList $appUid
 
+# Start logcat for WorkManager logs (only this app's UID)
+$job3 = Start-Job -ScriptBlock {
+    param($appUid)
+    adb logcat WorkManager:D WM-JobScheduler:D *:S |
+    Select-String "uid $appUid"
+} -ArgumentList $appUid
+
 # Keep script running
 Write-Host "Monitoring app logs for PID=$appPid, UID=$appUid" -ForegroundColor Cyan
 Write-Host "Press Ctrl+C to stop." -ForegroundColor Cyan
 
 # Keep fetching logs live
 while ($true) {
-    foreach ($job in @($job1, $job2)) {
+    foreach ($job in @($job1, $job2, $job3)) {
         Receive-Job -Job $job -Wait | ForEach-Object { Show-Log $_ }
     }
 }

@@ -30,9 +30,6 @@ export async function scheduleNotification() {
       type: TriggerType.TIMESTAMP,
       timestamp: triggerTime.getTime(), // number timestamp
       repeatFrequency: RepeatFrequency.HOURLY, // Repeat once an hour
-      alarmManager: {
-        allowWhileIdle: true,
-      },
     };
 
     const actions = [
