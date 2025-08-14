@@ -5,6 +5,9 @@ export async function scheduleNotification() {
 
   try {
 
+    // Cancel any existing notifications (optional for testing)
+    await notifee.cancelAllNotifications();
+
     // Ensure the proper permission is given (required for all devices)
     const granted = await ensureNotificationPermission();
     if (!granted) {
@@ -27,9 +30,9 @@ export async function scheduleNotification() {
     const triggerTime = new Date( Date.now() + (10 * 1000) ); // 10 seconds for testing
 
     const trigger = {
-      type: TriggerType.TIMESTAMP,
-      timestamp: triggerTime.getTime(), // number timestamp
-      repeatFrequency: RepeatFrequency.HOURLY, // Repeat once an hour
+      type: TriggerType.INTERVAL,
+      interval: 10, // in seconds
+      timeUnit: notifee.TimeUnit.SECONDS, // ensure seconds for testing
     };
 
     const actions = [
@@ -63,7 +66,7 @@ export async function scheduleNotification() {
           circularLargeIcon: true,
           actions: actions,
           autoCancel: false,
-          asForegroundService: false,
+          asForegroundService: true,
         },
       },
       trigger

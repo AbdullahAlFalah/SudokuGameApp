@@ -39,7 +39,7 @@ function Show-Log($line) {
 # Start logcat for app logs (ReactNativeJS + Notifee)
 $job1 = Start-Job -ScriptBlock {
     param($appPid)
-    adb logcat --pid $appPid ReactNativeJS:D Notifee:D *:S
+    adb logcat --pid $appPid ReactNativeJS:D *:S
 } -ArgumentList $appPid
 
 # Start logcat for AlarmManager logs (only this app's UID)
@@ -49,12 +49,10 @@ $job2 = Start-Job -ScriptBlock {
     Select-String "uid $appUid"
 } -ArgumentList $appUid
 
-# Start logcat for WorkManager logs (only this app's UID)
+# Start logcat for WorkManager logs (no UID filter to catch all relevant logs)
 $job3 = Start-Job -ScriptBlock {
-    param($appUid)
-    adb logcat WorkManager:D WM-JobScheduler:D *:S |
-    Select-String "uid $appUid"
-} -ArgumentList $appUid
+    adb logcat WorkManager:D WM-JobScheduler:D WM-SystemJobScheduler:D WM-WorkSpec:D WM-GreedyScheduler:D WM-WorkerWrapper:D WM-Processor:D Notifee:D *:S
+}
 
 # Keep script running
 Write-Host "Monitoring app logs for PID=$appPid, UID=$appUid" -ForegroundColor Cyan
