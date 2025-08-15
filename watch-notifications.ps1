@@ -5,6 +5,26 @@ param (
     [string]$packageName = "com.sudokugameapp"
 )
 
+# Immediately check if a WorkManager job is scheduled
+Write-Host "`nChecking WM scheduled jobs for $packageName..." -ForegroundColor Cyan
+$jobsOutput = adb shell dumpsys jobscheduler | Select-String $packageName
+if ($jobsOutput) {
+    Write-Host "Found WM scheduled jobs:" -ForegroundColor Green
+    $jobsOutput
+} else {
+    Write-Host "No WM jobs found for $packageName in JobScheduler." -ForegroundColor Red
+}
+
+# Immediately check if an Alarm job is scheduled
+Write-Host "`nChecking Alarm scheduled jobs for $packageName..." -ForegroundColor Cyan
+$jobsOutput = adb shell dumpsys alarm | Select-String $packageName
+if ($jobsOutput) {
+    Write-Host "Found Alarm scheduled jobs:" -ForegroundColor Green
+    $jobsOutput
+} else {
+    Write-Host "No Alarm jobs found for $packageName in JobScheduler." -ForegroundColor Red
+}
+
 # Get PID of running app
 $appPid = adb shell pidof $packageName
 if (-not $appPid) {
@@ -29,30 +49,43 @@ if (-not $uidLine) {
 $appUid = ($uidLine -split "uid=")[1] -replace '[^\d]', ''
 Write-Host "App UID: $appUid" -ForegroundColor Yellow
 
-# Function to colorize logs
+# Helper function to start a log process
+function Start-LogStream {
+    param(
+        [string]$Name, # job name argument
+        [string]$Command # command to be used by adb 
+    )
+
+    # Start the job directly with the command
+    Start-Job -Name $Name -ScriptBlock {
+        param($cmd)
+        # Run adb with the command and stream output line by line
+        & cmd /c "adb.exe $cmd" 2>&1 | ForEach-Object { Write-Output $_ }
+    } -ArgumentList $Command
+    return $job
+}
+
+# Helper function to colorize logs
 function Show-Log($line) {
     if ($line -match " E/") { Write-Host $line -ForegroundColor Red }
     elseif ($line -match " W/") { Write-Host $line -ForegroundColor Yellow }
     else { Write-Host $line -ForegroundColor Green }
 }
 
-# Start logcat for app logs (ReactNativeJS + Notifee)
-$job1 = Start-Job -ScriptBlock {
-    param($appPid)
-    adb logcat --pid $appPid ReactNativeJS:D *:S
-} -ArgumentList $appPid
+# Start monitoring each log source in parallel using Start-Job for async streaming
+$logJobs = @()
 
-# Start logcat for AlarmManager logs (only this app's UID)
-$job2 = Start-Job -ScriptBlock {
-    param($appUid)
-    adb logcat AlarmManager:D AlarmManagerService:D *:S |
-    Select-String "uid $appUid"
-} -ArgumentList $appUid
+# Start logcat for app logs (ReactNativeJS)
+$RNCommand = @("logcat --pid $appPid ReactNativeJS:D *:S")
+$logJobs += Start-LogStream -Name "RNLogs" -Command $RNCommand
 
-# Start logcat for WorkManager logs (no UID filter to catch all relevant logs)
-$job3 = Start-Job -ScriptBlock {
-    adb logcat WorkManager:D WM-JobScheduler:D WM-SystemJobScheduler:D WM-WorkSpec:D WM-GreedyScheduler:D WM-WorkerWrapper:D WM-Processor:D Notifee:D *:S
-}
+# Start logcat for WorkManager logs (only for this app's PID)
+$WMCommand = @("logcat --pid $appPid WorkManager:D WM-JobScheduler:D WM-SystemJobScheduler:D WM-WorkSpec:D WM-GreedyScheduler:D WM-WorkerWrapper:D WM-ConstraintsTracker:D WM-Processor:D SystemAlarmDispatcher:D SystemJobScheduler:D Notifee:D NotifeeWorker:D *:S")
+$logJobs += Start-LogStream -Name "WMLogs" -Command $WMCommand
+
+# Start logcat for AlarmManager logs (only for this app's PID)
+$AlarmCommand = @("logcat --pid $appPid AlarmManager:D AlarmManagerService:D ExactAlarm:D *:S")
+$logJobs += Start-LogStream -Name "AlarmLogs" -Command $AlarmCommand
 
 # Keep script running
 Write-Host "Monitoring app logs for PID=$appPid, UID=$appUid" -ForegroundColor Cyan
@@ -60,7 +93,12 @@ Write-Host "Press Ctrl+C to stop." -ForegroundColor Cyan
 
 # Keep fetching logs live
 while ($true) {
-    foreach ($job in @($job1, $job2, $job3)) {
-        Receive-Job -Job $job -Wait | ForEach-Object { Show-Log $_ }
+    foreach ($job in $logJobs) {
+        if ($job) { # filter nulls
+            Receive-Job -Job $job -Wait | ForEach-Object {
+                $prefix = $job.Name
+                Show-Log "[$prefix] $_"
+            }
+        }
     }
 }

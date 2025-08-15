@@ -16,6 +16,7 @@ import SoundManager from './utils/SoundManager';
 import KeepAwake from 'react-native-keep-awake';
 import notifee from '@notifee/react-native';
 import { scheduleNotification } from './services/NotifyService';
+import ensureExactAlarmPermission from './utils/exactAlarmPermission';
 import checkBackgroundRestrictions from './utils/BatteryModeRequest';
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -81,12 +82,35 @@ export default function App() {
 
   // Add this useEffect for scheduling notification after 2 seconds delay
   useEffect(() => {
-    const timer = setTimeout(async () => {
+    const scheduleOnAppStart = async () => {
       await notifee.cancelDisplayedNotifications(); // Cancel any already displayed notifications
-      await checkBackgroundRestrictions();// Then check for background restrictions (battery optimizations)
-      await scheduleNotification()
-        .then(() => console.log('Notification scheduled on app start'))
-        .catch(err => console.error('Failed to schedule notification on app start:', err));
+      try {
+        // Step 1: Exact alarm permission
+        const exactAlarmGranted = await ensureExactAlarmPermission();
+        console.log('Exact Alarm Granted:', exactAlarmGranted);
+        if (!exactAlarmGranted) {
+          console.warn('Exact Alarm permission denied. Stopping.');
+          return;
+        }
+
+        // Step 2: Check background restrictions
+        const backgroundOk = await checkBackgroundRestrictions();
+        console.log('Background restrictions OK:', backgroundOk);
+        if (!backgroundOk) {
+          console.warn('Background restriction not cleared. Stopping.');
+          return;
+        }
+
+        // Step 3: Schedule the notification
+        await scheduleNotification();
+        console.log('Notification scheduled successfully.');
+      } catch (err) {
+        console.error('Error in sequential permission flow:', err);
+      }
+    };
+
+    const timer = setTimeout(() => {
+      scheduleOnAppStart();
     }, 2000);
 
     return () => clearTimeout(timer);

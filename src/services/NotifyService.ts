@@ -1,4 +1,4 @@
-import notifee, { AndroidImportance, TimeUnit, TriggerType } from '@notifee/react-native';
+import notifee, { AndroidImportance, RepeatFrequency, TimestampTrigger, TriggerType } from '@notifee/react-native';
 import { ensureNotificationPermission } from '../utils/notificationsPermission';
 
 export async function scheduleNotification() {
@@ -27,12 +27,15 @@ export async function scheduleNotification() {
 
     // Set trigger time for the notification
     // const triggerTime = new Date( Date.now() + (3600 * 1000) ); // 1 hour from now
-    const triggerTime = new Date( Date.now() + (10 * 1000) ); // 10 seconds for testing
+    const triggerTime = new Date( Date.now() + (60 * 1000) ); // 1 minute for testing
 
-    const trigger = {
-      type: TriggerType.INTERVAL,
-      interval: 10, // in seconds
-      timeUnit: TimeUnit.SECONDS, // ensure seconds for testing
+    const trigger: TimestampTrigger = {
+      type: TriggerType.TIMESTAMP,
+      timestamp: triggerTime.getTime(), // number timestamp
+      repeatFrequency: RepeatFrequency.HOURLY, // repeat once an hour
+      alarmManager: {
+        allowWhileIdle: true,
+      },
     };
 
     const actions = [
@@ -66,7 +69,7 @@ export async function scheduleNotification() {
           circularLargeIcon: true,
           actions: actions,
           autoCancel: false,
-          asForegroundService: true,
+          asForegroundService: false,
         },
       },
       trigger
