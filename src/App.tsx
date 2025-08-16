@@ -15,9 +15,7 @@ import { BackHandler } from 'react-native';
 import SoundManager from './utils/SoundManager';
 import KeepAwake from 'react-native-keep-awake';
 import notifee from '@notifee/react-native';
-import { scheduleNotification } from './services/NotifyService';
-import ensureExactAlarmPermission from './utils/exactAlarmPermission';
-import checkBackgroundRestrictions from './utils/BatteryModeRequest';
+import UseScheduledPermissionsAndNotification from './hooks/useSequentialPermissions';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -84,29 +82,7 @@ export default function App() {
   useEffect(() => {
     const scheduleOnAppStart = async () => {
       await notifee.cancelDisplayedNotifications(); // Cancel any already displayed notifications
-      try {
-        // Step 1: Exact alarm permission
-        const exactAlarmGranted = await ensureExactAlarmPermission();
-        console.log('Exact Alarm Granted:', exactAlarmGranted);
-        if (!exactAlarmGranted) {
-          console.warn('Exact Alarm permission denied. Stopping.');
-          return;
-        }
-
-        // Step 2: Check background restrictions
-        const backgroundOk = await checkBackgroundRestrictions();
-        console.log('Background restrictions OK:', backgroundOk);
-        if (!backgroundOk) {
-          console.warn('Background restriction not cleared. Stopping.');
-          return;
-        }
-
-        // Step 3: Schedule the notification
-        await scheduleNotification();
-        console.log('Notification scheduled successfully.');
-      } catch (err) {
-        console.error('Error in sequential permission flow:', err);
-      }
+      UseScheduledPermissionsAndNotification();
     };
 
     const timer = setTimeout(() => {

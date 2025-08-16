@@ -16,7 +16,7 @@ export async function scheduleNotification() {
     }
 
     // Ensure the channel is created (required for Android)
-    await notifee.createChannel({
+    const channelId = await notifee.createChannel({
       id: 'default',
       name: 'Background Notification Channel',
       sound: 'notification_sound',
@@ -26,8 +26,8 @@ export async function scheduleNotification() {
     });
 
     // Set trigger time for the notification
-    // const triggerTime = new Date( Date.now() + (3600 * 1000) ); // 1 hour from now
-    const triggerTime = new Date( Date.now() + (60 * 1000) ); // 1 minute for testing
+    const triggerTime = new Date( Date.now() + (3600 * 1000) ); // 1 hour from now
+    // const triggerTime = new Date( Date.now() + (60 * 1000) ); // 1 minute for testing
 
     const trigger: TimestampTrigger = {
       type: TriggerType.TIMESTAMP,
@@ -62,7 +62,7 @@ export async function scheduleNotification() {
         title: 'Periodic Notification',
         body: `Hourly Reminder ${triggerTime.toLocaleTimeString(undefined, {hour12: true, hour: 'numeric', minute: 'numeric'})}.`,
         android: {
-          channelId: 'default',
+          channelId,
           smallIcon: 'ic_sudoku_32x32',
           color: '#9c27b0',
           largeIcon: 'ic_sudoku_64x64',

@@ -1,4 +1,4 @@
-import notifee from '@notifee/react-native';
+import notifee, { AuthorizationStatus } from '@notifee/react-native';
 import { Platform, Linking, Alert } from 'react-native';
 
 const APP_PACKAGE = 'com.sudokugameapp';
@@ -29,7 +29,7 @@ export async function ensureNotificationPermission(): Promise<boolean> {
         const settings = await notifee.requestPermission();
         if (
         (Platform.OS === 'ios' && settings.authorizationStatus < 1) ||
-        (Platform.OS === 'android' && !settings.authorizationStatus)
+        (Platform.OS === 'android' && settings.authorizationStatus !== AuthorizationStatus.AUTHORIZED)
         ) {
             // Permission not granted
             console.log('Notification permission not granted; user needs to enable it in settings.');
