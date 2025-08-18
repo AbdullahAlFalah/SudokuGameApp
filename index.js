@@ -64,6 +64,8 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
     // Notification delivered while the app is on background
     if (type === EventType.DELIVERED) {
       console.log('Notification delivered in background to be kept:', notification);
+      // Force display for devices that might suppress it
+      await notifee.displayNotification(notification);
     }
 
 });

@@ -14,8 +14,8 @@ import { getThemeStyles } from './Theme/ThemeStyles';
 import { BackHandler } from 'react-native';
 import SoundManager from './utils/SoundManager';
 import KeepAwake from 'react-native-keep-awake';
-import notifee from '@notifee/react-native';
 import UseScheduledPermissionsAndNotification from './hooks/useSequentialPermissions';
+import { displayNotificationTest } from './services/NotifyService';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -52,45 +52,34 @@ function AppNavigator() {
 
 export default function App() {
 
-  const navigationRef = useNavigationContainerRef();
+    const navigationRef = useNavigationContainerRef();
 
-  useEffect(() => {
+    useEffect(() => {
 
-    SoundManager.preloadSounds(); // Preload sounds when the app initializes
+      SoundManager.preloadSounds(); // Preload sounds when the app initializes
 
-    const handleBackPress = () => {
-      if (navigationRef.isReady() && navigationRef.canGoBack()) {
-        navigationRef.goBack();
-        return true;
-      } else if (navigationRef.isReady() && !navigationRef.canGoBack()) {
-        SoundManager.releaseAll(); // Release all sounds before exiting;
-        return false; // Allow default back behavior (exit app)
-      }
-      return false;
-    };
+      const handleBackPress = () => {
+        if (navigationRef.isReady() && navigationRef.canGoBack()) {
+          navigationRef.goBack();
+          return true;
+        } else if (navigationRef.isReady() && !navigationRef.canGoBack()) {
+          SoundManager.releaseAll(); // Release all sounds before exiting;
+          return false; // Allow default back behavior (exit app)
+        }
+        return false;
+      };
 
-    BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+      BackHandler.addEventListener('hardwareBackPress', handleBackPress);
 
-    return () => {
-      BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
-      SoundManager.releaseAll();
-    };
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+        SoundManager.releaseAll();
+      };
 
-  }, [navigationRef]);
+    }, [navigationRef]);
 
-  // Add this useEffect for scheduling notification after 2 seconds delay
-  useEffect(() => {
-    const scheduleOnAppStart = async () => {
-      await notifee.cancelDisplayedNotifications(); // Cancel any already displayed notifications
-      UseScheduledPermissionsAndNotification();
-    };
-
-    const timer = setTimeout(() => {
-      scheduleOnAppStart();
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
+    // UseScheduledPermissionsAndNotification();
+    displayNotificationTest();
 
     return (
 

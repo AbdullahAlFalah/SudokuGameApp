@@ -1,4 +1,4 @@
-import notifee, { AndroidImportance, RepeatFrequency, TimestampTrigger, TriggerType } from '@notifee/react-native';
+import notifee, { AndroidImportance, AndroidVisibility, RepeatFrequency, TimestampTrigger, TriggerType } from '@notifee/react-native';
 import { ensureNotificationPermission } from '../utils/notificationsPermission';
 
 export async function scheduleNotification() {
@@ -17,12 +17,13 @@ export async function scheduleNotification() {
 
     // Ensure the channel is created (required for Android)
     const channelId = await notifee.createChannel({
-      id: 'default',
-      name: 'Background Notification Channel',
+      id: 'hourly_notification_channel',
+      name: 'background_notification_channel',
       sound: 'notification_sound',
       vibration: true,
       bypassDnd: true,
-      importance: AndroidImportance.DEFAULT,
+      importance: AndroidImportance.HIGH,
+      visibility: AndroidVisibility.PUBLIC,
     });
 
     // Set trigger time for the notification
@@ -63,9 +64,8 @@ export async function scheduleNotification() {
         body: `Hourly Reminder ${triggerTime.toLocaleTimeString(undefined, {hour12: true, hour: 'numeric', minute: 'numeric'})}.`,
         android: {
           channelId,
-          smallIcon: 'ic_sudoku_32x32',
+          smallIcon: 'sudokuiconnotification',
           color: '#9c27b0',
-          largeIcon: 'ic_sudoku_64x64',
           circularLargeIcon: true,
           actions: actions,
           autoCancel: false,
@@ -85,3 +85,41 @@ export async function scheduleNotification() {
 
 }
 
+export async function displayNotificationTest() {
+
+  try {
+
+    const channelId = await notifee.createChannel({
+      id: 'debug_channel',
+      name: 'Debug Notifications',
+      importance: 4, // HIGH importance
+    });
+
+    await notifee.displayNotification({
+      title: 'Debug',
+      body: 'If you see this, the channel is fine',
+      android: {
+        channelId,
+        smallIcon: 'sudokuiconnotification',
+      },
+    });
+
+    const channel = await notifee.getChannel(channelId);
+
+    if (!channel) {
+      console.log(`Channel "${channelId}" does not exist`);
+      return;
+    }
+
+    console.log('Channel info:', channel);
+
+    if (channel.blocked) {
+      console.log(`Channel "${channelId}" is BLOCKED at the system level.`);
+    } else {
+      console.log(`Channel "${channelId}" is enabled with importance = ${channel.importance}`);
+    }
+
+  } catch (error) {
+    console.error('Failed to display testing notification:', error);
+  }
+}

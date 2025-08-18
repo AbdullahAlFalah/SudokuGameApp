@@ -67,9 +67,27 @@ function Start-LogStream {
 
 # Helper function to colorize logs
 function Show-Log($line) {
-    if ($line -match " E/") { Write-Host $line -ForegroundColor Red }
-    elseif ($line -match " W/") { Write-Host $line -ForegroundColor Yellow }
-    else { Write-Host $line -ForegroundColor Green }
+    if ($line -match "\sF\s") { 
+        Write-Host $line -ForegroundColor Magenta # Fatal error 
+    }
+    elseif ($line -match "\sE\s") {          
+        Write-Host $line -ForegroundColor Red # Error
+    }
+    elseif ($line -match "\sW\s") { 
+        Write-Host $line -ForegroundColor Yellow # Warning
+    }
+    elseif ($line -match "\sI\s") { 
+        Write-Host $line -ForegroundColor Green # Info
+    }
+    elseif ($line -match "\sD\s") {      
+        Write-Host $line -ForegroundColor Green # Debug
+    }
+    elseif ($line -match "\sV\s") {      
+        Write-Host $line -ForegroundColor Green # Verbose
+    }
+    else {                                
+        Write-Host $line -ForegroundColor Blue # Anything else
+    }
 }
 
 # Start monitoring each log source in parallel using Start-Job for async streaming

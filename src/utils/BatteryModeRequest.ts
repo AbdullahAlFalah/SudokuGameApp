@@ -1,5 +1,6 @@
 import { Alert, Platform } from 'react-native';
 import notifee from '@notifee/react-native';
+import { waitForAppActiveOnce, sleep } from './waitAppActive';
 
 /**
  * Checks if battery optimization is enabled for the app.
@@ -13,15 +14,14 @@ export default async function checkBackgroundRestrictions(): Promise<boolean> {
   }
 
   try {
-    const isBatteryOptimized = await notifee.isBatteryOptimizationEnabled();
-
+    let isBatteryOptimized = await notifee.isBatteryOptimizationEnabled();
     if (!isBatteryOptimized) {
       // No restriction, all good
       return true;
     }
 
     // Battery optimization is enabled, prompt user
-    return new Promise((resolve) => {
+    await new Promise<void>((resolve) => {
       Alert.alert(
         'Battery Optimization Detected',
         'To ensure notifications work properly, please disable battery optimization for this app.',
@@ -29,19 +29,26 @@ export default async function checkBackgroundRestrictions(): Promise<boolean> {
           {
             text: 'Cancel',
             style: 'cancel',
-            onPress: () => resolve(false),
+            onPress: () => resolve(), // Don't wait for app resume if they cancelled
           },
           {
             text: 'Open Settings',
             onPress: async () => {
               await notifee.openBatteryOptimizationSettings();
-              resolve(false); // Permission not yet granted, will check next app start
+              await waitForAppActiveOnce(); // Only resolve after app comes back
+              await sleep(1200); // Small buffer
+              resolve(); // continue after user leaves app
             },
           },
         ],
         { cancelable: false },
       );
     });
+
+    // Re-check battery optimization status
+    isBatteryOptimized = await notifee.isBatteryOptimizationEnabled();
+    return !isBatteryOptimized;
+
   } catch (err) {
     console.error('Error checking background restrictions:', err);
     return false;
