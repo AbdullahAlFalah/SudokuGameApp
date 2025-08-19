@@ -94,11 +94,11 @@ function Show-Log($line) {
 $logJobs = @()
 
 # Start logcat for app logs (ReactNativeJS)
-$RNCommand = @("logcat --pid $appPid ReactNativeJS:D *:S")
+$RNCommand = @("logcat --pid $appPid ReactNativeJS:D Notifee:D NotifeeWorker:D *:S")
 $logJobs += Start-LogStream -Name "RNLogs" -Command $RNCommand
 
 # Start logcat for WorkManager logs (only for this app's PID)
-$WMCommand = @("logcat --pid $appPid WorkManager:D WM-JobScheduler:D WM-SystemJobScheduler:D WM-WorkSpec:D WM-GreedyScheduler:D WM-WorkerWrapper:D WM-ConstraintsTracker:D WM-Processor:D SystemAlarmDispatcher:D SystemJobScheduler:D Notifee:D NotifeeWorker:D *:S")
+$WMCommand = @("logcat --pid $appPid WorkManager:D WM-JobScheduler:D WM-SystemJobScheduler:D WM-WorkSpec:D WM-GreedyScheduler:D WM-WorkerWrapper:D WM-ConstraintsTracker:D WM-Processor:D SystemAlarmDispatcher:D SystemJobScheduler:D *:S")
 $logJobs += Start-LogStream -Name "WMLogs" -Command $WMCommand
 
 # Start logcat for AlarmManager logs (only for this app's PID)

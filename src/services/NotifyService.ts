@@ -64,7 +64,7 @@ export async function scheduleNotification() {
         body: `Hourly Reminder ${triggerTime.toLocaleTimeString(undefined, {hour12: true, hour: 'numeric', minute: 'numeric'})}.`,
         android: {
           channelId,
-          smallIcon: 'ic_notification_white',
+          smallIcon: 'ic_notification',
           color: '#9c27b0',
           circularLargeIcon: true,
           actions: actions,
@@ -100,7 +100,7 @@ export async function displayNotificationTest() {
       body: 'If you see this, the channel is fine',
       android: {
         channelId,
-        smallIcon: 'ic_notification_white',
+        smallIcon: 'ic_notification',
       },
     });
 
