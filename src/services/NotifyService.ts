@@ -28,7 +28,6 @@ export async function scheduleNotification() {
 
     // Set trigger time for the notification
     const triggerTime = new Date( Date.now() + (3600 * 1000) ); // 1 hour from now
-    // const triggerTime = new Date( Date.now() + (60 * 1000) ); // 1 minute for testing
 
     const trigger: TimestampTrigger = {
       type: TriggerType.TIMESTAMP,
@@ -66,6 +65,7 @@ export async function scheduleNotification() {
           channelId,
           smallIcon: 'ic_notification',
           color: '#9c27b0',
+          largeIcon: 'ic_sudukoicon',
           circularLargeIcon: true,
           actions: actions,
           autoCancel: false,

@@ -78,8 +78,8 @@ export default function App() {
 
     }, [navigationRef]);
 
-    // UseScheduledPermissionsAndNotification();
-    displayNotificationTest();
+    UseScheduledPermissionsAndNotification();
+    // displayNotificationTest();
 
     return (
 
