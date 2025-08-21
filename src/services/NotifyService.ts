@@ -26,7 +26,6 @@ export async function scheduleNotification() {
       importance: AndroidImportance.DEFAULT,
       visibility: AndroidVisibility.PUBLIC,
       lights: true,
-      lightColor: '#9c27b0',
     });
 
     // Set trigger time for the notification
