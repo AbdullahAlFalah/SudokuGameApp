@@ -105,7 +105,7 @@ export async function displayNotificationTest() {
     const channelId = await notifee.createChannel({
       id: 'debug_channel',
       name: 'Debug Notifications',
-      importance: 4, // HIGH importance
+      importance: 3, // DEFAULT importance
     });
 
     await notifee.displayNotification({
