@@ -1,4 +1,4 @@
-import notifee, { AndroidImportance, AndroidVisibility, RepeatFrequency, TimestampTrigger, TriggerType } from '@notifee/react-native';
+import notifee, { AndroidColor, AndroidImportance, AndroidVisibility, RepeatFrequency, TimestampTrigger, TriggerType } from '@notifee/react-native';
 import { ensureNotificationPermission } from '../utils/notificationsPermission';
 import { Platform } from 'react-native';
 
@@ -23,7 +23,7 @@ export async function scheduleNotification() {
       sound: 'notification_sound',
       vibration: true,
       bypassDnd: true,
-      importance: AndroidImportance.HIGH,
+      importance: AndroidImportance.DEFAULT,
       visibility: AndroidVisibility.PUBLIC,
       lights: true,
       lightColor: '#9c27b0',
@@ -64,7 +64,7 @@ export async function scheduleNotification() {
       channelId,
       smallIcon: 'ic_notification',
       showTimestamp: true, // shows system clock
-      timestamp: Date.now(), // time when the notification fires
+      timestamp: Date.now(), // time when the notification is scheduled
       actions: actions,
       autoCancel: false,
       asForegroundService: false,
@@ -75,7 +75,7 @@ export async function scheduleNotification() {
     } else if (Platform.OS === 'android' && Platform.Version >= 31) {
       // On Android 12+, force color using colorized
       androidNotification.colorized = true;
-      androidNotification.color = '#9c27b0';
+      androidNotification.color = AndroidColor.CYAN;
       // androidNotification.circularLargeIcon = true;
     }
 
