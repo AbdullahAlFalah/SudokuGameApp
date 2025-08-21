@@ -4,7 +4,7 @@ import notifee from '@notifee/react-native';
 
 import ensureExactAlarmPermission from '../utils/exactAlarmPermission';
 import checkBackgroundRestrictions from '../utils/BatteryModeRequest';
-import checkPowerManagementRestrictions from '../utils/PowerManagerSettings';
+// import checkPowerManagementRestrictions from '../utils/PowerManagerSettings';
 import { scheduleNotification } from '../services/NotifyService';
 
 const runScheduleNotification = async (): Promise<boolean> => {
@@ -37,7 +37,7 @@ export default function UseScheduledPermissionsAndNotification() {
                 const steps: Array<{ name: string; run: () => Promise<boolean>; soft?: boolean }> = [
                     { name: 'Exact Alarm Permission', run: ensureExactAlarmPermission },
                     { name: 'Background Restrictions', run: checkBackgroundRestrictions },
-                    { name: 'Power Management', run: checkPowerManagementRestrictions, soft:true }, // soft check
+                    // { name: 'Power Management', run: checkPowerManagementRestrictions, soft:true }, // soft check
                     { name: 'Schedule Notification', run: runScheduleNotification },
                 ];
 

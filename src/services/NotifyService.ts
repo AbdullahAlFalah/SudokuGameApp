@@ -1,5 +1,6 @@
 import notifee, { AndroidImportance, AndroidVisibility, RepeatFrequency, TimestampTrigger, TriggerType } from '@notifee/react-native';
 import { ensureNotificationPermission } from '../utils/notificationsPermission';
+import { Platform } from 'react-native';
 
 export async function scheduleNotification() {
 
@@ -24,6 +25,8 @@ export async function scheduleNotification() {
       bypassDnd: true,
       importance: AndroidImportance.HIGH,
       visibility: AndroidVisibility.PUBLIC,
+      lights: true,
+      lightColor: '#9c27b0',
     });
 
     // Set trigger time for the notification
@@ -56,21 +59,32 @@ export async function scheduleNotification() {
       },
     ];
 
+    // Dynamic approach
+    const androidNotification: any = {
+      channelId,
+      smallIcon: 'ic_notification',
+      showTimestamp: true, // shows system clock
+      timestamp: Date.now(), // time when the notification fires
+      actions: actions,
+      autoCancel: false,
+      asForegroundService: false,
+    };
+    if (Platform.OS === 'android' && Platform.Version < 31) {
+      // Apply color only on older Android
+      androidNotification.color = '#9c27b0';
+    } else if (Platform.OS === 'android' && Platform.Version >= 31) {
+      // On Android 12+, force color using colorized
+      androidNotification.colorized = true;
+      androidNotification.color = '#9c27b0';
+      // androidNotification.circularLargeIcon = true;
+    }
+
     // Schedule the notification
     await notifee.createTriggerNotification(
       {
         title: 'Periodic Notification',
-        body: `Hourly Reminder ${triggerTime.toLocaleTimeString(undefined, {hour12: true, hour: 'numeric', minute: 'numeric'})}.`,
-        android: {
-          channelId,
-          smallIcon: 'ic_notification',
-          color: '#9c27b0',
-          largeIcon: 'ic_sudukoicon',
-          circularLargeIcon: true,
-          actions: actions,
-          autoCancel: false,
-          asForegroundService: false,
-        },
+        body: 'Friendly Reminder!',
+        android: androidNotification,
       },
       trigger
     );
