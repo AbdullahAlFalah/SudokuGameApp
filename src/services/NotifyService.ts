@@ -1,4 +1,4 @@
-import notifee, { AndroidColor, AndroidImportance, AndroidVisibility, NotificationAndroid, RepeatFrequency, TimestampTrigger, TriggerType } from '@notifee/react-native';
+import notifee, { AndroidImportance, AndroidVisibility, NotificationAndroid, RepeatFrequency, TimestampTrigger, TriggerType } from '@notifee/react-native';
 import { ensureNotificationPermission } from '../utils/notificationsPermission';
 import { Platform } from 'react-native';
 
@@ -69,9 +69,6 @@ export async function scheduleNotification() {
     if (Platform.OS === 'android' && Platform.Version < 31) {
       // Apply color only on older Android
       androidNotification.color = '#9c27b0';
-    } else if (Platform.OS === 'android' && Platform.Version >= 31) {
-      // On Android 12+, force color using colorized
-      androidNotification.color = AndroidColor.CYAN;
     }
 
     // Schedule the notification

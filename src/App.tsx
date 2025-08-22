@@ -15,7 +15,6 @@ import { BackHandler } from 'react-native';
 import SoundManager from './utils/SoundManager';
 import KeepAwake from 'react-native-keep-awake';
 import UseScheduledPermissionsAndNotification from './hooks/useSequentialPermissions';
-import { displayNotificationTest } from './services/NotifyService';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -79,7 +78,6 @@ export default function App() {
     }, [navigationRef]);
 
     UseScheduledPermissionsAndNotification();
-    // displayNotificationTest();
 
     return (
 
