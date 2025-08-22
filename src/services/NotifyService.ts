@@ -62,8 +62,6 @@ export async function scheduleNotification() {
     const androidNotification: NotificationAndroid = {
       channelId,
       smallIcon: 'ic_notification',
-      showTimestamp: true, // shows system clock
-      timestamp: Date.now(), // time when the notification is scheduled
       actions: actions,
       autoCancel: false,
       asForegroundService: false,
